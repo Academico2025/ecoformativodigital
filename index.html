@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plan de Mejoramiento con IA (DBA MEN Colombia)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --accent:#22c55e; --text:#e2e8f0; --muted:#94a3b8; }
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#020617;color:var(--text);padding:1.5rem;display:flex;justify-content:center}
+    .app{width:min(1200px,100%);display:grid;gap:1rem;grid-template-columns:1.1fr .9fr}
+    @media(max-width:1040px){.app{grid-template-columns:1fr}}
+    .card{background:rgba(15,23,42,.35);border:1px solid rgba(148,163,184,.12);border-radius:1rem;padding:1rem 1.2rem}
+    .row{display:grid;gap:.6rem;grid-template-columns:1fr 1fr}
+    label{font-size:.78rem;color:var(--muted)}
+    input,select,textarea{width:100%;background:rgba(15,23,42,.35);border:1px solid rgba(148,163,184,.35);border-radius:.6rem;padding:.5rem .65rem;color:var(--text)}
+    textarea{min-height:88px}
+    .btn{border:none;border-radius:.6rem;padding:.55rem .95rem;cursor:pointer;font-size:.85rem}
+    .btn-primary{background:linear-gradient(90deg,#22c55e,#16a34a);color:#020617}
+    .btn-outline{background:rgba(148,163,184,.05);border:1px solid rgba(148,163,184,.3);color:var(--text)}
+    .output-box{background:rgba(15,23,42,.25);border:1px dashed rgba(148,163,184,.25);border-radius:.6rem;padding:.65rem .8rem;min-height:140px;white-space:pre-wrap;font-size:.85rem;line-height:1.35}
+    .badge{display:inline-flex;padding:.15rem .6rem;border-radius:999px;font-size:.72rem;border:1px solid rgba(148,163,184,.25)}
+    .nivel-superior{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:#bbf7d0}
+    .nivel-bajo{background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.4);color:#fdba74}
+    .stack{display:flex;gap:.5rem;flex-wrap:wrap}
+    .muted{color:var(--muted);font-size:.78rem}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <!-- IZQUIERDA -->
+    <div class="card">
+      <h1 style="margin:.2rem 0 .4rem">Plan de Mejoramiento (DBA MEN)</h1>
+      <p class="muted">Genera actividades de recuperación con ejercicios, talleres y evaluaciones alineadas a DBA MEN Colombia.</p>
+
+      <div class="row" style="margin-top:.5rem">
+        <div>
+          <label>Nombre del estudiante</label>
+          <input id="nombre" placeholder="Nombre y apellido" />
+        </div>
+        <div>
+          <label>Grado</label>
+          <select id="grado">
+            <option>1°</option><option>2°</option><option>3°</option><option>4°</option><option>5°</option>
+            <option>6°</option><option>7°</option><option>8°</option><option>9°</option><option>10°</option><option>11°</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:.5rem">
+        <div>
+          <label>Área</label>
+          <select id="area">
+            <option>Matemáticas</option>
+            <option>Lengua Castellana</option>
+            <option>Ciencias Naturales</option>
+            <option>Ciencias Sociales</option>
+            <option>Inglés</option>
+            <option>Ética y Valores</option>
+          </select>
+        </div>
+        <div>
+          <label>Nota (0–5)</label>
+          <input id="nota" type="number" min="0" max="5" step="0.01" placeholder="2.9" />
+        </div>
+      </div>
+
+      <div style="margin-top:.5rem">
+        <label>Temas / desempeños no superados</label>
+        <textarea id="temas" placeholder="Ej.: lectura inferencial; fracciones; ecosistemas; pensamiento espacial; verb to be; normas de convivencia…"></textarea>
+      </div>
+
+      <div class="stack" style="margin-top:.6rem">
+        <button class="btn btn-primary" id="btn-generar-base">Generar base (automático)</button>
+        <button class="btn btn-outline" id="btn-limpiar">Limpiar</button>
+        <button class="btn btn-outline" id="btn-pdf-base">PDF Base</button>
+        <span id="info-nivel" class="badge">Sin nota</span>
+      </div>
+
+      <div style="margin-top:.8rem">
+        <label>Actividades generadas (base)</label>
+        <div id="salida" class="output-box"></div>
+      </div>
+    </div>
+
+    <!-- DERECHA -->
+    <div class="card">
+      <h2 style="margin:.2rem 0 .6rem">Complementar con IA (DBA MEN Colombia)</h2>
+      <p class="muted">La IA usará el texto base y los DBA del área/grado para crear <b>talleres, ejercicios, problemas combinados y evaluaciones</b>.</p>
+
+      <div class="row">
+        <div>
+          <label>Proveedor IA</label>
+          <select id="prov">
+            <option value="gemini">Gemini</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+        <div>
+          <label>Modelo</label>
+          <input id="modelo" placeholder="gemini-1.5-flash-latest / gpt-4o-mini" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:.5rem">
+        <div>
+          <label>API key (opcional para modo online)</label>
+          <input id="apiKey" type="password" placeholder="tu_key_aquí" />
+        </div>
+        <div class="stack" style="align-items:flex-end">
+          <button class="btn btn-primary" id="btn-verificar" style="margin-top:1.45rem">Verificar / Cambiar modo</button>
+          <span id="estado-ia" class="badge" style="margin-top:1.45rem">Modo: offline</span>
+        </div>
+      </div>
+
+      <div class="stack" style="margin-top:.6rem">
+        <button class="btn btn-outline" id="btn-ia">Generar con IA (talleres + ejercicios + evaluaciones)</button>
+        <button class="btn btn-outline" id="btn-pdf-ia" disabled>PDF IA</button>
+      </div>
+
+      <div style="margin-top:.8rem">
+        <label>Plan ampliado por IA (DBA MEN)</label>
+        <div id="ia-respuesta" class="output-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ======= Mapa mínimo de DBA MEN (síntesis) para 1°–5° =======
+    // Nota: síntesis pedagógicas operativas (no transcriben documentos oficiales; sirven para contextualizar el prompt).
+    const DBA_MINI = {
+      "Matemáticas": {
+        "1°": ["Conteo y valor posicional inicial","Suma y resta en contexto","Figuras planas básicas","Medición no convencional","Patrones simples"],
+        "2°": ["Suma y resta con reagrupación","Introducción a multiplicación (repetición)","Longitud y tiempo básicos","Patrones y series","Resolución de problemas simples"],
+        "3°": ["Multiplicación y división básicas","Fracciones unitarias","Perímetro","Gráficas de barras simples","Problemas aritméticos de 1–2 pasos"],
+        "4°": ["Multiplicación/división con números mayores","Fracciones y decimales básicos","Área y perímetro","Ángulos y líneas","Representación de datos"],
+        "5°": ["Operaciones con fracciones/decimales básicos","Proporcionalidad inicial","Volumen básico","Coordenadas I cuadrante","Problemas multietapa"]
+      },
+      "Lengua Castellana": {
+        "1°": ["Conciencia fonológica y decodificación","Comprensión literal de textos cortos","Producción de oraciones","Vocabulario de aula","Normas básicas de escritura"],
+        "2°": ["Comprensión literal e inferencial inicial","Secuencias y personajes","Textos instructivos cortos","Ortografía básica","Narración breve"],
+        "3°": ["Comprensión inferencial básica","Ideas principales y secundarias","Textos expositivos simples","Coherencia y cohesión inicial","Plan de escritura"],
+        "4°": ["Comprensión crítica inicial","Resumen y paráfrasis","Tipos textuales (narr., descript., expositivo)","Ortografía intermedia","Producción de párrafos"],
+        "5°": ["Comprensión crítica y propósito del autor","Argumentación inicial","Textos informativos más extensos","Cohesión y conectores","Revisión y edición del texto"]
+      },
+      "Ciencias Naturales": {
+        "1°": ["Cuerpo y sentidos","Seres vivos vs no vivos","Partes de la planta","Agua y clima","Seguridad en experiencias"],
+        "2°": ["Animales y hábitats","Funciones del cuerpo","Estados de la materia","Cuidado ambiental","Medición básica"],
+        "3°": ["Ciclo del agua y vida de plantas","Fuentes de energía simples","Uso de instrumentos (long., temp.)","Registros en tablas","Método científico básico"],
+        "4°": ["Ecosistemas y cadenas tróficas","Mezclas y soluciones","Fuerza y movimiento","Indagación guiada","Cuidado del entorno"],
+        "5°": ["Sistemas del cuerpo (resp., dig., circ.)","Transformaciones de energía","Interpretación de datos y gráficas","Exp. con control de variables","Acciones de salud y ambiente"]
+      },
+      "Ciencias Sociales": {
+        "1°": ["Identidad y familia","Entorno cercano","Normas de convivencia","Puntos cardinales básicos","Símbolos patrios"],
+        "2°": ["Comunidad y oficios","Mapas simples","Pasado y presente","Derechos y deberes","Cuidado de lo público"],
+        "3°": ["Regiones naturales básicas","Cartografía elemental","Hechos y cambios históricos","Instituciones locales","Economía cotidiana"],
+        "4°": ["Regiones de Colombia","Lectura de mapas y escalas simples","Procesos históricos clave","Participación ciudadana","Diversidad cultural"],
+        "5°": ["Relación sociedad-ambiente","Cartografía intermedia","Linea del tiempo y fuentes","Organización del Estado","Economía y comercio básico"]
+      },
+      "Inglés": {
+        "1°": ["Greetings y classroom objects","Colors y numbers 1–20","Parts of the body","Simple commands","Songs and chants"],
+        "2°": ["Family y food","Animals y clothes","Basic Q&A (What is this?)","Short sentences + pictures","Phonics inicial"],
+        "3°": ["Daily routines (present)","Prepositions (in/on/under)","Likes/Dislikes","Main idea (short texts)","Pronunciation patterns"],
+        "4°": ["Weather & places","Comparatives & superlatives","Giving directions","Paragraph writing (and/but/because)","Reading for detail"],
+        "5°": ["Past simple (went/played)","Going to (plans)","Reading: main idea & purpose","Core academic vocab","Short writing 3–4 lines"]
+      },
+      "Ética y Valores": {
+        "1°": ["Autocuidado y empatía","Normas en el aula","Resolución pacífica básica","Respeto por la diferencia","Trabajo en equipo"],
+        "2°": ["Solidaridad y honestidad","Responsabilidad en casa/escuela","Cuidado del entorno","Diálogo y escucha","Reglas y consecuencias"],
+        "3°": ["Convivencia y diversidad","Conflictos y acuerdos","Participación y liderazgo","Cuidado de lo público","Proyecto de vida inicial"],
+        "4°": ["Ciudadanía y derechos","Ética del cuidado","Resolución de conflictos","Normas y acuerdos","Ambiente y corresponsabilidad"],
+        "5°": ["Justicia y respeto","Debate y argumentación","Ciudadanía digital","Cuidado socioemocional","Servicio a la comunidad"]
+      }
+    };
+
+    // ======= Utilidades y estado =======
+    const $ = id => document.getElementById(id);
+    const elNombre=$("nombre"), elGrado=$("grado"), elArea=$("area"), elNota=$("nota"), elTemas=$("temas");
+    const elSalida=$("salida"), elInfo=$("info-nivel");
+    const btnBase=$("btn-generar-base"), btnLimpiar=$("btn-limpiar"), btnPDFBase=$("btn-pdf-base");
+
+    const elProv=$("prov"), elModelo=$("modelo"), elApiKey=$("apiKey"), btnVer=$("btn-verificar");
+    const btnIA=$("btn-ia"), btnPDFIA=$("btn-pdf-ia"), elEstado=$("estado-ia"), elIA=$("ia-respuesta");
+
+    let online=false;
+
+    function clasificarNota(n){
+      if(isNaN(n))return{nivel:"Sin nota", clase:"", generar:false};
+      if(n<=3.29)return{nivel:"BAJO (0–3.29)", clase:"nivel-bajo", generar:true};
+      if(n<4)return{nivel:"BÁSICO (<4)", clase:"", generar:false};
+      if(n<4.6)return{nivel:"ALTO", clase:"", generar:false};
+      return{nivel:"SUPERIOR", clase:"nivel-superior", generar:false};
+    }
+
+    function getDBA(area, grado){
+      const g = String(grado);
+      const mapa = DBA_MINI[area];
+      if(mapa && mapa[g]) return mapa[g];
+      // fallback genérico para 6°–11° o áreas sin mapa
+      return ["Enfoque de competencias del área según MEN","Comprensión y uso de conceptos clave",
+              "Resolución de problemas contextualizados","Comunicación de procesos y resultados",
+              "Actitudes y valores en el trabajo académico"];
+    }
+
+    // ======= Base local (sin IA) =======
+    function plantillasBase(area, temas, grado){
+      const dba = getDBA(area, grado).slice(0,4);
+      const base = temas || "los temas indicados";
+      return [
+        `Revisar cuaderno y evidencias de ${base}.`,
+        `Lectura guiada de 1 página sobre: ${dba.join("; ")}.`,
+        `Ejercicios graduados (5 ítems) del más sencillo al más complejo sobre ${base}.`,
+        `Taller aplicado en contexto colombiano (familia/escuela/barrio) vinculando ${base}.`,
+        `Reevaluación corta (10 puntos) con mínimo 3,3.`
+      ];
+    }
+
+    btnBase.onclick = () => {
+      const nota=parseFloat(elNota.value);
+      const c=clasificarNota(nota);
+      elInfo.textContent=c.nivel; elInfo.className="badge "+(c.clase||"");
+      if(!c.generar){ elSalida.textContent="La nota no requiere plan automático."; return; }
+
+      const acts = plantillasBase(elArea.value, elTemas.value.trim(), elGrado.value);
+      const dba = getDBA(elArea.value, elGrado.value);
+      elSalida.textContent =
+`PLAN DE MEJORAMIENTO (BASE)
+Estudiante: ${elNombre.value || "_____"}
+Grado: ${elGrado.value}    Área: ${elArea.value}
+Nota: ${elNota.value || "-"}   Nivel: ${c.nivel}
+
+DBA MEN (síntesis) para ${elArea.value} – ${elGrado.value}:
+- ${dba.join("\n- ")}
+
+Temas / desempeños no superados:
+- ${elTemas.value.trim() || "Por definir"}
+
+Actividades sugeridas:
+${acts.map((a,i)=> (i+1)+". "+a).join("\n")}
+
+Criterio de superación:
+- Entregar todas las actividades con calidad y presentar reevaluación ≥ 3,3.`;
+    };
+
+    btnLimpiar.onclick = () => {
+      [elNombre, elNota, elTemas].forEach(x=>x.value="");
+      [elSalida, elIA].forEach(x=>x.textContent="");
+      elInfo.textContent="Sin nota"; elInfo.className="badge";
+      online=false; elEstado.textContent="Modo: offline"; elEstado.className="badge nivel-bajo";
+      btnPDFIA.disabled=true;
+    };
+
+    btnPDFBase.onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({unit:"mm", format:"a4"});
+      const txt = elSalida.textContent || "Sin plan";
+      const lines = doc.splitTextToSize(txt, 180);
+      doc.text(lines, 15, 20);
+      doc.save("plan_base.pdf");
+    };
+
+    // ======= Verificar / modo =======
+    btnVer.onclick = () => {
+      const hasKey = elApiKey.value.trim().length>0;
+      online = hasKey;
+      if(online){
+        elEstado.textContent = "Modo: online (IA conectada)";
+        elEstado.className = "badge nivel-superior";
+      } else {
+        elEstado.textContent = "Modo: offline";
+        elEstado.className = "badge nivel-bajo";
+      }
+    };
+
+    // ======= IA ONLINE (Gemini / OpenAI) =======
+    async function callGemini(apiKey, model, prompt){
+      const models = [
+        (model && model.trim()) || "gemini-1.5-flash-latest",
+        "gemini-2.5-flash",
+        "gemini-1.5-flash-8b"
+      ];
+      const body = { contents: [{ parts: [{ text: prompt }]}] };
+      const base = "https://generativelanguage.googleapis.com";
+      let lastErr=null;
+      for(const mdl of models){
+        for(const ver of ["v1","v1beta"]){
+          try{
+            const url = `${base}/${ver}/models/${encodeURIComponent(mdl)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+            const r = await fetch(url,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+            const j = await r.json();
+            if(!r.ok) throw new Error(j?.error?.message || "Gemini error");
+            return j.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          }catch(e){ lastErr=e; }
+        }
+      }
+      throw lastErr || new Error("No fue posible conectar a Gemini.");
+    }
+
+    async function callOpenAI(apiKey, model, prompt){
+      const mdl = (model && model.trim()) || "gpt-4o-mini";
+      const r = await fetch("https://api.openai.com/v1/chat/completions",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+        body:JSON.stringify({
+          model: mdl,
+          messages:[
+            {role:"system", content:"Eres un docente colombiano experto en currículo MEN. Genera materiales prácticos alineados a DBA para primaria (y secundaria si aplica)."},
+            {role:"user", content: prompt}
+          ],
+          temperature:0.7
+        })
+      });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j?.error?.message || "OpenAI error");
+      return j.choices?.[0]?.message?.content || "";
+    }
+
+    // ======= IA OFFLINE =======
+    function callOffline(prompt, area, grado){
+      // Generador local sencillo con bloques prácticos
+      const dba = getDBA(area, grado);
+      const ejemplos = area==="Matemáticas"
+        ? `Ejercicios:
+- (Nivel 1) Suma: 27 + 18 = __
+- (Nivel 2) Resta: 304 – 167 = __
+- (Nivel 3) Problema: En una tienda venden 4 cajas con 6 empanadas cada una. ¿Cuántas empanadas hay en total?
+Problemas combinados:
+1) Juan recorrió 2,4 km el lunes y 1,8 km el martes. ¿Cuánto recorrió en total? (usa decimales)
+2) Una receta necesita 3/4 de taza de harina. Si haces 2 recetas, ¿cuánta harina usas?
+Evaluación corta (clave al final):
+1) 35 + 47 = __
+2) 120 – 58 = __
+3) 3 × 7 = __
+4) 18 ÷ 3 = __
+5) Si 1/2 litro cuesta $2.000, ¿cuánto cuesta 1 litro? __
+Claves: 1) 82  2) 62  3) 21  4) 6  5) 4.000`
+        : area==="Lengua Castellana"
+        ? `Taller de lectura:
+- Texto breve informativo sobre el agua en Colombia (6–8 líneas).
+Actividades:
+1) Idea principal y 2 ideas secundarias.
+2) Dos inferencias (¿qué se deduce?).
+3) Vocabulario: define 3 palabras nuevas.
+Producción:
+- Escribe un párrafo (5–6 líneas) resumiendo el texto con conectores (porque, además, por eso).
+Evaluación (clave de ejemplo):
+- Preguntas de opción múltiple sobre idea principal, detalle y propósito del autor.`
+        : area==="Ciencias Naturales"
+        ? `Guía práctica:
+- Experimento seguro: germinación de fríjol. Materiales, pasos, registro en tabla (día, altura, observaciones).
+- Explica ciclo del agua con dibujo (evaporación, condensación, precipitación).
+Problemas:
+1) Si una planta al sol crece 2 cm/semana y a la sombra 1 cm/semana, ¿cuánto crecerán en 4 semanas?
+Evaluación (clave):
+1) 8 cm; 4 cm.`
+        : `Taller aplicado:
+- Actividad de aula contextualizada en Colombia.
+- 5 ejercicios graduados.
+- Problemas combinados de 2–3 pasos.
+Evaluación formativa con rúbrica (criterios y niveles).`;
+
+      return `PLAN AMPLIADO (OFFLINE)
+DBA referencia (${area} – ${grado}):
+- ${dba.join("\n- ")}
+
+Secuencia didáctica:
+1) Diagnóstico breve con 3 preguntas.
+2) Recuperación conceptual (resumen de 5–7 líneas).
+3) Práctica guiada (3 ítems).
+4) Práctica independiente (5 ítems).
+5) Socialización y metacognición.
+
+${ejemplos}
+
+Criterios de valoración:
+- Pertinencia, corrección, procedimiento, comunicación, presentación.
+
+Reevaluación:
+- 10 preguntas breves (mínimo 3,3).`;
+    }
+
+    // ======= Prompt IA con énfasis en materiales prácticos =======
+    function buildPrompt(area, grado, nombre, baseText){
+      const dba = getDBA(area, grado);
+      return (
+`Contexto: Sistema educativo colombiano (MEN). Genera un Plan de Mejoramiento alineado a los DBA MEN para el área de ${area}, grado ${grado}.
+Estudiante: ${nombre || "_____"}.
+
+DBA MEN (síntesis/criterios de referencia):
+- ${dba.join("\n- ")}
+
+Usa el siguiente texto de base del docente:
+${baseText || "(sin base)"}
+
+Entrega en español y formato claro con SECCIONES:
+1) Diagnóstico (qué no se logró, evidencias breves).
+2) Propósito de recuperación (conexión a DBA).
+3) Secuencia didáctica (pasos).
+4) Material práctico por componente:
+   4.1) Ejercicios graduados (10 ítems con respuestas).
+   4.2) Taller aplicado (contexto colombiano familia/escuela/comunidad) con instrucciones, insumos y producto final.
+   4.3) Problemas combinados (mínimo 5, de 2–3 pasos) con claves o procedimientos.
+   4.4) Mini-proyecto o reto creativo (1) alineado a los DBA.
+5) Evaluación formativa: rúbrica con 4 criterios × 4 niveles, descriptores observables.
+6) Evaluación sumativa: 10 preguntas (diversificadas) con CLAVE de respuestas.
+7) Adaptaciones NEAE (sugerencias de ajuste razonable).
+8) Materiales y tiempo estimado.
+9) Criterios de superación (mínimo 3,3) y evidencias a entregar.
+
+Tono: claro, docente, concreto y accionable. SIN listas vacías.`
+      );
+    }
+
+    // ======= IA: un click =======
+    btnIA.onclick = async () => {
+      const base = elSalida.textContent.trim();
+      const area = elArea.value, grado = elGrado.value, nombre = elNombre.value.trim();
+      const prompt = buildPrompt(area, grado, nombre, base);
+
+      elIA.textContent = "Generando materiales con IA…";
+      try{
+        let txt="";
+        if(online){
+          const prov = elProv.value;
+          const model = elModelo.value.trim();
+          const key = elApiKey.value.trim();
+          if(!key){ elIA.textContent="🔑 Falta la API key para modo online. Cambia a modo offline o ingrésala."; return; }
+          txt = (prov==="gemini")
+            ? await callGemini(key, model, prompt)
+            : await callOpenAI(key, model, prompt);
+        } else {
+          txt = callOffline(prompt, area, grado);
+        }
+        elIA.textContent = txt || "Sin respuesta.";
+        btnPDFIA.disabled = false;
+      }catch(e){
+        elIA.textContent = "❌ Error: " + e.message;
+      }
+    };
+
+btnPDFIA.onclick = () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+  const txt = elIA.textContent || "Sin contenido IA";
+
+  // Dimensiones y formato
+  const pageWidth  = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const marginX = 15;
+  const marginY = 20;
+  const lineHeight = 7;
+  const maxWidth = pageWidth - 2 * marginX;
+
+  // Partir texto y escribirlo en múltiples páginas
+  const lines = doc.splitTextToSize(txt, maxWidth);
+  let y = marginY;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (y > pageHeight - marginY) { // Salto de página
+      doc.addPage();
+      y = marginY;
+    }
+    doc.text(lines[i], marginX, y);
+    y += lineHeight;
+  }
+
+  // ----- Footer con numeración de páginas -----
+  const pageCount = doc.internal.getNumberOfPages();
+  doc.setFontSize(10);
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    const footer = `Página ${i} de ${pageCount}`;
+    // alineado a la derecha, 10 mm desde el borde inferior
+    doc.text(footer, pageWidth - marginX, pageHeight - 10, { align: "right" });
+  }
+
+  doc.save("plan_mejoramiento_IA_DBA.pdf");
+    };
+  </script>
+</body>
+</html>
