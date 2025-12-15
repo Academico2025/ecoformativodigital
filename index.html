@@ -5,11 +5,11 @@
   <title>Plan de Mejoramiento con IA (DBA MEN Colombia)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root { --accent:#22c55e; --text:#e2e8f0; --muted:#94a3b8; }
-    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#020617;color:var(--text);padding:1.5rem;display:flex;justify-content:center}
+    :root { --accent:#22c55e; --text:#e2e8f0; --muted:#94a3b8; --bg:#020617; --card:rgba(15,23,42,.35); }
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);padding:1.5rem;display:flex;justify-content:center}
     .app{width:min(1200px,100%);display:grid;gap:1rem;grid-template-columns:1.1fr .9fr}
     @media(max-width:1040px){.app{grid-template-columns:1fr}}
-    .card{background:rgba(15,23,42,.35);border:1px solid rgba(148,163,184,.12);border-radius:1rem;padding:1rem 1.2rem}
+    .card{background:var(--card);border:1px solid rgba(148,163,184,.12);border-radius:1rem;padding:1rem 1.2rem}
     .row{display:grid;gap:.6rem;grid-template-columns:1fr 1fr}
     label{font-size:.78rem;color:var(--muted)}
     input,select,textarea{width:100%;background:rgba(15,23,42,.35);border:1px solid rgba(148,163,184,.35);border-radius:.6rem;padding:.5rem .65rem;color:var(--text)}
@@ -17,12 +17,32 @@
     .btn{border:none;border-radius:.6rem;padding:.55rem .95rem;cursor:pointer;font-size:.85rem}
     .btn-primary{background:linear-gradient(90deg,#22c55e,#16a34a);color:#020617}
     .btn-outline{background:rgba(148,163,184,.05);border:1px solid rgba(148,163,184,.3);color:var(--text)}
-    .output-box{background:rgba(15,23,42,.25);border:1px dashed rgba(148,163,184,.25);border-radius:.6rem;padding:.65rem .8rem;min-height:140px;white-space:pre-wrap;font-size:.85rem;line-height:1.35}
+    .output-box{background:rgba(15,23,42,.25);border:1px dashed rgba(148,163,184,.25);border-radius:.6rem;padding:.65rem .8rem;min-height:140px;font-size:.85rem;line-height:1.35}
+    .output-pre{white-space:pre-wrap}
+    .output-html{white-space:normal}
     .badge{display:inline-flex;padding:.15rem .6rem;border-radius:999px;font-size:.72rem;border:1px solid rgba(148,163,184,.25)}
     .nivel-superior{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:#bbf7d0}
     .nivel-bajo{background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.4);color:#fdba74}
     .stack{display:flex;gap:.5rem;flex-wrap:wrap}
     .muted{color:var(--muted);font-size:.78rem}
+    .small{font-size:.76rem;color:var(--muted)}
+    .pill{display:inline-flex;gap:.35rem;align-items:center}
+    .hr{height:1px;background:rgba(148,163,184,.18);margin:.7rem 0}
+
+    /* Render JSON -> HTML */
+    .plan h3{margin:.7rem 0 .35rem;font-size:1rem}
+    .plan h4{margin:.55rem 0 .25rem;font-size:.92rem;color:var(--text)}
+    .plan .kv{display:grid;grid-template-columns:140px 1fr;gap:.35rem .6rem}
+    .plan .kv div{padding:.15rem 0}
+    .plan ul{margin:.2rem 0 .6rem 1.1rem}
+    .plan li{margin:.12rem 0}
+    .plan .q{margin:.35rem 0 .55rem}
+    .plan .q .t{color:var(--muted);font-size:.78rem}
+    .plan table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:.55rem;border:1px solid rgba(148,163,184,.22)}
+    .plan th,.plan td{border-bottom:1px solid rgba(148,163,184,.15);border-right:1px solid rgba(148,163,184,.15);padding:.4rem .45rem;vertical-align:top}
+    .plan th:last-child,.plan td:last-child{border-right:none}
+    .plan tr:last-child td{border-bottom:none}
+    .plan th{font-size:.78rem;color:var(--muted);background:rgba(15,23,42,.35)}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -79,14 +99,14 @@
 
       <div style="margin-top:.8rem">
         <label>Actividades generadas (base)</label>
-        <div id="salida" class="output-box"></div>
+        <div id="salida" class="output-box output-pre"></div>
       </div>
     </div>
 
     <!-- DERECHA -->
     <div class="card">
       <h2 style="margin:.2rem 0 .6rem">Complementar con IA (DBA MEN Colombia)</h2>
-      <p class="muted">La IA usará el texto base y los DBA del área/grado para crear <b>talleres, ejercicios, problemas combinados y evaluaciones</b>.</p>
+      <p class="muted">La IA usa el texto base y los DBA del área/grado para crear materiales completos. La respuesta se estructura en JSON y se renderiza en pantalla para un PDF más limpio.</p>
 
       <div class="row">
         <div>
@@ -114,20 +134,24 @@
       </div>
 
       <div class="stack" style="margin-top:.6rem">
-        <button class="btn btn-outline" id="btn-ia">Generar con IA (talleres + ejercicios + evaluaciones)</button>
+        <button class="btn btn-outline" id="btn-ia">Generar con IA (Talleres + ejercicios + rúbrica + evaluaciones)</button>
         <button class="btn btn-outline" id="btn-pdf-ia" disabled>PDF IA</button>
+</div>
+
+      <div class="hr"></div>
+
+      <div style="margin-top:.2rem">
+        <label>Plan ampliado por IA</label>
+        <div id="ia-respuesta" class="output-box output-html"></div>
       </div>
 
-      <div style="margin-top:.8rem">
-        <label>Plan ampliado por IA (DBA MEN)</label>
-        <div id="ia-respuesta" class="output-box"></div>
-      </div>
+      <p class="small" style="margin-top:.6rem">Sugerencia: para IA online, pega tu API key, verifica el modo y genera. Para offline, se crea un JSON local básico con el mismo esquema.</p>
     </div>
   </div>
 
   <script>
     // ======= Mapa mínimo de DBA MEN (síntesis) para 1°–5° =======
-    // Nota: síntesis pedagógicas operativas (no transcriben documentos oficiales; sirven para contextualizar el prompt).
+    // Síntesis pedagógicas operativas (sirven para contextualizar el prompt).
     const DBA_MINI = {
       "Matemáticas": {
         "1°": ["Conteo y valor posicional inicial","Suma y resta en contexto","Figuras planas básicas","Medición no convencional","Patrones simples"],
@@ -181,8 +205,15 @@
 
     const elProv=$("prov"), elModelo=$("modelo"), elApiKey=$("apiKey"), btnVer=$("btn-verificar");
     const btnIA=$("btn-ia"), btnPDFIA=$("btn-pdf-ia"), elEstado=$("estado-ia"), elIA=$("ia-respuesta");
+        let online=false;
+    let iaData=null; // JSON final de IA
 
-    let online=false;
+    function formatDateISO(d){
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
 
     function clasificarNota(n){
       if(isNaN(n))return{nivel:"Sin nota", clase:"", generar:false};
@@ -197,9 +228,13 @@
       const mapa = DBA_MINI[area];
       if(mapa && mapa[g]) return mapa[g];
       // fallback genérico para 6°–11° o áreas sin mapa
-      return ["Enfoque de competencias del área según MEN","Comprensión y uso de conceptos clave",
-              "Resolución de problemas contextualizados","Comunicación de procesos y resultados",
-              "Actitudes y valores en el trabajo académico"];
+      return [
+        "Enfoque de competencias del área según MEN",
+        "Comprensión y uso de conceptos clave",
+        "Resolución de problemas contextualizados",
+        "Comunicación de procesos y resultados",
+        "Actitudes y valores en el trabajo académico"
+      ];
     }
 
     // ======= Base local (sin IA) =======
@@ -244,18 +279,49 @@ Criterio de superación:
 
     btnLimpiar.onclick = () => {
       [elNombre, elNota, elTemas].forEach(x=>x.value="");
-      [elSalida, elIA].forEach(x=>x.textContent="");
+      elSalida.textContent="";
+      elIA.innerHTML="";
       elInfo.textContent="Sin nota"; elInfo.className="badge";
-      online=false; elEstado.textContent="Modo: offline"; elEstado.className="badge nivel-bajo";
-      btnPDFIA.disabled=true;
-    };
+      online=false;
+      elEstado.textContent="Modo: offline";
+      elEstado.className="badge nivel-bajo";
+      iaData=null;
+      btnPDFIA.disabled=true; };
 
     btnPDFBase.onclick = () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({unit:"mm", format:"a4"});
+
       const txt = elSalida.textContent || "Sin plan";
-      const lines = doc.splitTextToSize(txt, 180);
-      doc.text(lines, 15, 20);
+      const pageWidth  = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginX = 15;
+      const marginY = 18;
+      const maxWidth = pageWidth - 2*marginX;
+      const lineH = 5.3;
+
+      const lines = doc.splitTextToSize(txt, maxWidth);
+      let y = marginY;
+
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(10.5);
+
+      for(const ln of lines){
+        if(y > pageHeight - marginY){
+          doc.addPage();
+          y = marginY;
+        }
+        doc.text(ln, marginX, y);
+        y += lineH;
+      }
+
+      const pageCount = doc.internal.getNumberOfPages();
+      doc.setFontSize(9.5);
+      for(let i=1;i<=pageCount;i++){
+        doc.setPage(i);
+        doc.text(`Página ${i} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align:"right" });
+      }
+
       doc.save("plan_base.pdf");
     };
 
@@ -279,16 +345,39 @@ Criterio de superación:
         "gemini-2.5-flash",
         "gemini-1.5-flash-8b"
       ];
-      const body = { contents: [{ parts: [{ text: prompt }]}] };
       const base = "https://generativelanguage.googleapis.com";
       let lastErr=null;
+
+      // Base request: menor temperatura para reducir errores de formato
+      const bodyBase = {
+        contents: [{ parts: [{ text: prompt }]}],
+        generationConfig: { temperature: 0.2 }
+      };
+
       for(const mdl of models){
         for(const ver of ["v1","v1beta"]){
+          const url = `${base}/${ver}/models/${encodeURIComponent(mdl)}:generateContent?key=${encodeURIComponent(apiKey)}`;
           try{
-            const url = `${base}/${ver}/models/${encodeURIComponent(mdl)}:generateContent?key=${encodeURIComponent(apiKey)}`;
-            const r = await fetch(url,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
-            const j = await r.json();
-            if(!r.ok) throw new Error(j?.error?.message || "Gemini error");
+            // Intento 1: pedir salida tipo JSON (si está soportado)
+            let r = await fetch(url,{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body: JSON.stringify({
+                ...bodyBase,
+                generationConfig: { ...bodyBase.generationConfig, responseMimeType: "application/json" }
+              })
+            });
+            let j = await r.json();
+            if(!r.ok){
+              // Intento 2: sin responseMimeType (compatibilidad)
+              r = await fetch(url,{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify(bodyBase)
+              });
+              j = await r.json();
+              if(!r.ok) throw new Error(j?.error?.message || "Gemini error");
+            }
             return j.candidates?.[0]?.content?.parts?.[0]?.text || "";
           }catch(e){ lastErr=e; }
         }
@@ -304,10 +393,11 @@ Criterio de superación:
         body:JSON.stringify({
           model: mdl,
           messages:[
-            {role:"system", content:"Eres un docente colombiano experto en currículo MEN. Genera materiales prácticos alineados a DBA para primaria (y secundaria si aplica)."},
+            {role:"system", content:"Eres un docente colombiano experto en currículo MEN. Respondes exactamente con el JSON solicitado."},
             {role:"user", content: prompt}
           ],
-          temperature:0.7
+          response_format: { type: "json_object" },
+          temperature:0.2
         })
       });
       const j = await r.json();
@@ -315,167 +405,831 @@ Criterio de superación:
       return j.choices?.[0]?.message?.content || "";
     }
 
-    // ======= IA OFFLINE =======
-    function callOffline(prompt, area, grado){
-      // Generador local sencillo con bloques prácticos
-      const dba = getDBA(area, grado);
-      const ejemplos = area==="Matemáticas"
-        ? `Ejercicios:
-- (Nivel 1) Suma: 27 + 18 = __
-- (Nivel 2) Resta: 304 – 167 = __
-- (Nivel 3) Problema: En una tienda venden 4 cajas con 6 empanadas cada una. ¿Cuántas empanadas hay en total?
-Problemas combinados:
-1) Juan recorrió 2,4 km el lunes y 1,8 km el martes. ¿Cuánto recorrió en total? (usa decimales)
-2) Una receta necesita 3/4 de taza de harina. Si haces 2 recetas, ¿cuánta harina usas?
-Evaluación corta (clave al final):
-1) 35 + 47 = __
-2) 120 – 58 = __
-3) 3 × 7 = __
-4) 18 ÷ 3 = __
-5) Si 1/2 litro cuesta $2.000, ¿cuánto cuesta 1 litro? __
-Claves: 1) 82  2) 62  3) 21  4) 6  5) 4.000`
-        : area==="Lengua Castellana"
-        ? `Taller de lectura:
-- Texto breve informativo sobre el agua en Colombia (6–8 líneas).
-Actividades:
-1) Idea principal y 2 ideas secundarias.
-2) Dos inferencias (¿qué se deduce?).
-3) Vocabulario: define 3 palabras nuevas.
-Producción:
-- Escribe un párrafo (5–6 líneas) resumiendo el texto con conectores (porque, además, por eso).
-Evaluación (clave de ejemplo):
-- Preguntas de opción múltiple sobre idea principal, detalle y propósito del autor.`
-        : area==="Ciencias Naturales"
-        ? `Guía práctica:
-- Experimento seguro: germinación de fríjol. Materiales, pasos, registro en tabla (día, altura, observaciones).
-- Explica ciclo del agua con dibujo (evaporación, condensación, precipitación).
-Problemas:
-1) Si una planta al sol crece 2 cm/semana y a la sombra 1 cm/semana, ¿cuánto crecerán en 4 semanas?
-Evaluación (clave):
-1) 8 cm; 4 cm.`
-        : `Taller aplicado:
-- Actividad de aula contextualizada en Colombia.
-- 5 ejercicios graduados.
-- Problemas combinados de 2–3 pasos.
-Evaluación formativa con rúbrica (criterios y niveles).`;
+    // ======= Extractor robusto de JSON (si el modelo se sale del formato) =======
+    function extractJson(text){
+      if(!text) throw new Error("Respuesta vacía.");
+      const s = String(text).trim();
 
-      return `PLAN AMPLIADO (OFFLINE)
-DBA referencia (${area} – ${grado}):
-- ${dba.join("\n- ")}
+      // Caso ideal: ya es JSON puro
+      if(s.startsWith("{") && s.endsWith("}")){
+        return s;
+      }
 
-Secuencia didáctica:
-1) Diagnóstico breve con 3 preguntas.
-2) Recuperación conceptual (resumen de 5–7 líneas).
-3) Práctica guiada (3 ítems).
-4) Práctica independiente (5 ítems).
-5) Socialización y metacognición.
+      // Buscar primer objeto JSON balanceando llaves, respetando strings
+      const start = s.indexOf("{");
+      if(start < 0) throw new Error("No se encontró un objeto JSON en la respuesta.");
 
-${ejemplos}
+      let inStr = false;
+      let esc = false;
+      let depth = 0;
 
-Criterios de valoración:
-- Pertinencia, corrección, procedimiento, comunicación, presentación.
-
-Reevaluación:
-- 10 preguntas breves (mínimo 3,3).`;
+      for(let i=start;i<s.length;i++){
+        const ch = s[i];
+        if(inStr){
+          if(esc){ esc = false; continue; }
+          if(ch === "\\"){ esc = true; continue; }
+          if(ch === '"'){ inStr = false; continue; }
+        } else {
+          if(ch === '"'){ inStr = true; continue; }
+          if(ch === "{"){ depth++; }
+          if(ch === "}"){
+            depth--;
+            if(depth === 0){
+              return s.slice(start, i+1);
+            }
+          }
+        }
+      }
+      throw new Error("No fue posible extraer un JSON completo (llaves no balanceadas).");
     }
 
-    // ======= Prompt IA con énfasis en materiales prácticos =======
-    function buildPrompt(area, grado, nombre, baseText){
+    
+    // ======= Limpieza + auto-corrección si el JSON viene con errores =======
+    function cleanJsonString(s){
+      if(!s) return "";
+      let t = String(s).trim();
+      // BOM / caracteres raros
+      t = t.replace(/\uFEFF/g, "");
+      // Comillas tipográficas
+      t = t.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+      // Comas colgantes
+      t = t.replace(/,\s*([}\]])/g, "$1");
+      return t;
+    }
+    // ======= Reparación local de JSON (cuando el modelo se "come" comas o mete saltos de línea en strings) =======
+    function escapeNewlinesInStrings(str){
+      let out = "";
+      let inStr = false;
+      let esc = false;
+      for(let i=0;i<str.length;i++){
+        const ch = str[i];
+        if(inStr){
+          if(esc){ out += ch; esc = false; continue; }
+          if(ch === "\\"){ out += ch; esc = true; continue; }
+          if(ch === '"'){ out += ch; inStr = false; continue; }
+          if(ch === "\n"){ out += "\\n"; continue; }
+          if(ch === "\r"){ out += "\\r"; continue; }
+          out += ch;
+          continue;
+        }else{
+          if(ch === '"'){ inStr = true; out += ch; continue; }
+          out += ch;
+        }
+      }
+      return out;
+    }
+
+    function insertMissingCommas(str){
+      let out = "";
+      let inStr = false;
+      let esc = false;
+
+      const isWS = (c)=> c===" " || c==="\n" || c==="\r" || c==="\t";
+      const isDigit = (c)=> c>="0" && c<="9";
+      const isAlpha = (c)=> /[A-Za-z]/.test(c);
+      const isValueStart = (c)=> c==='"' || c==="{" || c==="[" || c==="-" || isDigit(c) || c==="t" || c==="f" || c==="n";
+
+      let lastSig = "start"; // "value" | "comma" | "colon" | "lbrace" | "lbracket" | "start"
+
+      let i = 0;
+      while(i < str.length){
+        const ch = str[i];
+
+        if(inStr){
+          out += ch;
+          if(esc){ esc = false; i++; continue; }
+          if(ch === "\\"){ esc = true; i++; continue; }
+          if(ch === '"'){ inStr = false; lastSig = "value"; i++; continue; }
+          i++;
+          continue;
+        }
+
+        if(isWS(ch)){ out += ch; i++; continue; }
+
+        // Caso típico del error: faltó una coma entre elementos (especialmente en arrays)
+        if(isValueStart(ch) && lastSig === "value"){
+          out += ",";
+          lastSig = "comma";
+          continue; // no consumimos 'ch' todavía
+        }
+
+        if(ch === '"'){ inStr = true; out += ch; i++; continue; }
+
+        // Puntuación JSON
+        if(ch === "{"){ out += ch; lastSig = "lbrace"; i++; continue; }
+        if(ch === "["){ out += ch; lastSig = "lbracket"; i++; continue; }
+        if(ch === "}"){ out += ch; lastSig = "value"; i++; continue; }
+        if(ch === "]"){ out += ch; lastSig = "value"; i++; continue; }
+        if(ch === ":"){ out += ch; lastSig = "colon"; i++; continue; }
+        if(ch === ","){ out += ch; lastSig = "comma"; i++; continue; }
+
+        // Números
+        if(ch === "-" || isDigit(ch)){
+          let j = i + 1;
+          while(j < str.length && /[0-9eE\+\-\.]/.test(str[j])) j++;
+          out += str.slice(i, j);
+          lastSig = "value";
+          i = j;
+          continue;
+        }
+
+        // Literales (true/false/null)
+        if(isAlpha(ch)){
+          let j = i + 1;
+          while(j < str.length && isAlpha(str[j])) j++;
+          out += str.slice(i, j);
+          lastSig = "value";
+          i = j;
+          continue;
+        }
+
+        out += ch;
+        i++;
+      }
+      return out;
+    }
+
+    function repairJsonSyntax(s){
+      let t = String(s || "").trim();
+      // Normalizaciones útiles antes de parsear
+      t = escapeNewlinesInStrings(t);
+      // Comas colgantes
+      t = t.replace(/,\s*([}\]])/g, "$1");
+      // Insertar comas faltantes entre valores contiguos
+      t = insertMissingCommas(t);
+      // Reaplicar por si el insert dejó alguna colgante
+      t = t.replace(/,\s*([}\]])/g, "$1");
+      return t;
+    }
+
+
+    async function parseJsonWithAutoFix(rawText, onlineCtx){
+      // onlineCtx: { online, prov, key, model }
+      const raw = String(rawText || "");
+      let jsonStr = cleanJsonString(extractJson(raw));
+      try{
+        return JSON.parse(jsonStr);
+      }catch(err){
+        // Reparación local (sin volver a llamar a la IA)
+        try{
+          const repaired = repairJsonSyntax(jsonStr);
+          return JSON.parse(repaired);
+        }catch(_e){
+          // si falla, seguimos con el auto-fix por IA
+        }
+
+        // Intento automático: pedir al modelo que entregue el mismo contenido pero como JSON válido
+        if(onlineCtx && onlineCtx.online && onlineCtx.key){
+          const fixPrompt =
+`Tu respuesta anterior NO es un JSON válido. Corrígela y devuélvela como un único objeto JSON válido.
+Reglas:
+- Devuelve SOLO JSON, sin texto adicional.
+- No inventes nuevas secciones: conserva exactamente las mismas llaves y la misma estructura.
+- Solo corrige errores de sintaxis (comas, comillas, saltos de línea en strings, etc.).
+Texto a corregir:
+${raw}`;
+          const fixedTxt = (onlineCtx.prov==="gemini")
+            ? await callGemini(onlineCtx.key, onlineCtx.model, fixPrompt)
+            : await callOpenAI(onlineCtx.key, onlineCtx.model, fixPrompt);
+          const fixedJson = cleanJsonString(extractJson(fixedTxt));
+          return JSON.parse(repairJsonSyntax(fixedJson));
+        }
+        throw err;
+      }
+    }
+
+// ======= Prompt (Prompt6) -> salida estricta en JSON =======
+    function buildPrompt(area, grado, nombre, baseText, nota, nivel, fechaISO){
       const dba = getDBA(area, grado);
+
       return (
-`Contexto: Sistema educativo colombiano (MEN). Genera un Plan de Mejoramiento alineado a los DBA MEN para el área de ${area}, grado ${grado}.
-Estudiante: ${nombre || "_____"}.
+`Eres un docente colombiano experto en currículo MEN. Tu salida debe ser SOLO un JSON válido (sin Markdown, sin comillas triples, sin texto antes o después).
 
-DBA MEN (síntesis/criterios de referencia):
-- ${dba.join("\n- ")}
+Reglas estrictas:
+- Devuelve un único objeto JSON.
+- No incluyas caracteres fuera del JSON.
+- Usa español.
+- No dejes listas vacías: si algo no aplica, escribe una alternativa breve.
+- Rúbrica: exactamente 4 criterios y cada criterio con exactamente 4 niveles.
+- Evaluación sumativa: exactamente 10 preguntas con clave.
+- Ejercicios graduados: exactamente 10 ítems con respuesta.
+- Problemas combinados: exactamente 5 ítems con solución breve.
 
-Usa el siguiente texto de base del docente:
+Contexto:
+- Área: ${area}
+- Grado: ${grado}
+- Estudiante: ${nombre || "_____"}
+- Nota: ${nota || "-"}
+- Nivel: ${nivel || "Sin nota"}
+- Fecha: ${fechaISO}
+
+DBA referencia (síntesis):
+${dba.map(x=>`- ${x}`).join("\n")}
+
+Texto base del docente:
 ${baseText || "(sin base)"}
 
-Entrega en español y formato claro con SECCIONES:
-1) Diagnóstico (qué no se logró, evidencias breves).
-2) Propósito de recuperación (conexión a DBA).
-3) Secuencia didáctica (pasos).
-4) Material práctico por componente:
-   4.1) Ejercicios graduados (10 ítems con respuestas).
-   4.2) Taller aplicado (contexto colombiano familia/escuela/comunidad) con instrucciones, insumos y producto final.
-   4.3) Problemas combinados (mínimo 5, de 2–3 pasos) con claves o procedimientos.
-   4.4) Mini-proyecto o reto creativo (1) alineado a los DBA.
-5) Evaluación formativa: rúbrica con 4 criterios × 4 niveles, descriptores observables.
-6) Evaluación sumativa: 10 preguntas (diversificadas) con CLAVE de respuestas.
-7) Adaptaciones NEAE (sugerencias de ajuste razonable).
-8) Materiales y tiempo estimado.
-9) Criterios de superación (mínimo 3,3) y evidencias a entregar.
-
-Tono: claro, docente, concreto y accionable. SIN listas vacías.`
+Esquema JSON obligatorio:
+{
+  "version":"1.0",
+  "meta":{
+    "estudiante":"${nombre || "_____"}",
+    "grado":"${grado}",
+    "area":"${area}",
+    "nota":"${nota || "-"}",
+    "nivel":"${nivel || "Sin nota"}",
+    "fecha":"${fechaISO}"
+  },
+  "dba":[ "...", "...", "...", "...", "..." ],
+  "diagnostico":{
+    "queNoSeLogro":[ "...", "..." ],
+    "evidencias":[ "...", "..." ]
+  },
+  "propositoRecuperacion":"...",
+  "secuenciaDidactica":[ "Paso 1...", "Paso 2...", "Paso 3...", "Paso 4...", "Paso 5..." ],
+  "materialPractico":{
+    "ejerciciosGraduados":[
+      {"id":1,"enunciado":"...","respuesta":"..."}
+    ],
+    "tallerAplicado":{
+      "titulo":"...",
+      "contexto":"familia/escuela/comunidad en Colombia",
+      "instrucciones":[ "...", "..." ],
+      "insumos":[ "...", "..." ],
+      "productoFinal":"..."
+    },
+    "problemasCombinados":[
+      {"id":1,"enunciado":"...","solucionBreve":"..."}
+    ],
+    "retoCreativo":{
+      "titulo":"...",
+      "descripcion":"...",
+      "pasos":[ "...", "..." ],
+      "evidencia":"..."
+    }
+  },
+  "evaluacionFormativa":{
+    "criterios":[
+      {"criterio":"...","niveles":[
+        {"nivel":"1","descriptor":"..."},
+        {"nivel":"2","descriptor":"..."},
+        {"nivel":"3","descriptor":"..."},
+        {"nivel":"4","descriptor":"..."}
+      ]},
+      {"criterio":"...","niveles":[{"nivel":"1","descriptor":"..."},{"nivel":"2","descriptor":"..."},{"nivel":"3","descriptor":"..."},{"nivel":"4","descriptor":"..."}]},
+      {"criterio":"...","niveles":[{"nivel":"1","descriptor":"..."},{"nivel":"2","descriptor":"..."},{"nivel":"3","descriptor":"..."},{"nivel":"4","descriptor":"..."}]},
+      {"criterio":"...","niveles":[{"nivel":"1","descriptor":"..."},{"nivel":"2","descriptor":"..."},{"nivel":"3","descriptor":"..."},{"nivel":"4","descriptor":"..."}]}
+    ]
+  },
+  "evaluacionSumativa":{
+    "preguntas":[
+      {"id":1,"tipo":"seleccion_multiple|abierta|verdadero_falso","enunciado":"...","opciones":["A) ...","B) ...","C) ...","D) ..."],"respuesta":"..."}
+    ]
+  },
+  "adaptacionesNEAE":[ "...", "..." ],
+  "materialesYTiempo":{
+    "materiales":[ "...", "..." ],
+    "tiempoEstimadoMinutos":120,
+    "sesionesSugeridas":"..."
+  },
+  "criteriosSuperacion":{
+    "notaMinima":3.3,
+    "evidenciasAEntregar":[ "...", "..." ]
+  }
+}`
       );
+    }
+
+    // ======= IA OFFLINE (JSON con mismo esquema) =======
+    function offlineJSON(area, grado, nombre, nota, nivel){
+      const dba = getDBA(area, grado);
+
+      function mk10(prefix){
+        const out = [];
+        for(let i=1;i<=10;i++){
+          out.push({id:i, enunciado:`${prefix} ${i}`, respuesta:`Respuesta ${i}`});
+        }
+        return out;
+      }
+      function mk5(prefix){
+        const out = [];
+        for(let i=1;i<=5;i++){
+          out.push({id:i, enunciado:`${prefix} ${i} (2–3 pasos)`, solucionBreve:`Solución breve ${i}`});
+        }
+        return out;
+      }
+      function rubric(){
+        return [
+          {criterio:"Comprensión conceptual", niveles:[
+            {nivel:"1", descriptor:"Muestra confusión frecuente y requiere guía permanente."},
+            {nivel:"2", descriptor:"Reconoce conceptos con apoyo y ejemplos."},
+            {nivel:"3", descriptor:"Aplica conceptos en ejercicios habituales con pocos errores."},
+            {nivel:"4", descriptor:"Explica y aplica conceptos en situaciones nuevas con claridad."}
+          ]},
+          {criterio:"Procedimiento y estrategia", niveles:[
+            {nivel:"1", descriptor:"No sigue pasos o los aplica al azar."},
+            {nivel:"2", descriptor:"Sigue pasos con apoyo, pero omite verificaciones."},
+            {nivel:"3", descriptor:"Sigue un procedimiento adecuado y verifica parcialmente."},
+            {nivel:"4", descriptor:"Selecciona estrategias, verifica y justifica decisiones."}
+          ]},
+          {criterio:"Comunicación", niveles:[
+            {nivel:"1", descriptor:"Respuestas incompletas o poco legibles."},
+            {nivel:"2", descriptor:"Comunica ideas básicas con apoyo de formatos."},
+            {nivel:"3", descriptor:"Comunica con orden y vocabulario apropiado."},
+            {nivel:"4", descriptor:"Comunica con precisión, ejemplos y buen uso de conectores."}
+          ]},
+          {criterio:"Autonomía y presentación", niveles:[
+            {nivel:"1", descriptor:"Depende totalmente del docente y presenta trabajos incompletos."},
+            {nivel:"2", descriptor:"Avanza con recordatorios y entrega parcialmente."},
+            {nivel:"3", descriptor:"Trabaja con autonomía y entrega completo."},
+            {nivel:"4", descriptor:"Gestiona tiempo, mejora y entrega evidencias de alta calidad."}
+          ]}
+        ];
+      }
+
+      const fechaISO = formatDateISO(new Date());
+
+      // 10 preguntas sumativa (mezcla de tipos)
+      const preguntas = Array.from({length:10}, (_,i)=>({
+        id:i+1,
+        tipo: (i%3===0) ? "seleccion_multiple" : (i%3===1) ? "verdadero_falso" : "abierta",
+        enunciado:`Pregunta ${i+1} sobre ${area} (grado ${grado}).`,
+        opciones: (i%3===0) ? ["A) Opción A","B) Opción B","C) Opción C","D) Opción D"] : [],
+        respuesta: (i%3===0) ? "A" : (i%3===1) ? "Verdadero" : "Respuesta modelo breve"
+      }));
+
+      return {
+        version:"1.0",
+        meta:{
+          estudiante: nombre || "_____",
+          grado: String(grado),
+          area: String(area),
+          nota: nota || "-",
+          nivel: nivel || "Sin nota",
+          fecha: fechaISO
+        },
+        dba: dba,
+        diagnostico:{
+          queNoSeLogro:["Presenta dificultades en los temas priorizados.","Evidencia errores recurrentes en actividades previas."],
+          evidencias:["Talleres incompletos o con baja precisión.","Resultados bajos en evaluación o actividades de clase."]
+        },
+        propositoRecuperacion:"Fortalecer desempeños clave del área a partir de práctica guiada, aplicación contextual y evaluación con retroalimentación.",
+        secuenciaDidactica:["Diagnóstico rápido (3 ítems).","Recuperación conceptual breve.","Práctica guiada con ejemplos.","Práctica independiente (taller).","Reevaluación y reflexión final."],
+        materialPractico:{
+          ejerciciosGraduados: mk10("Ejercicio graduado"),
+          tallerAplicado:{
+            titulo:`Taller aplicado: ${area}`,
+            contexto:"familia/escuela/comunidad en Colombia",
+            instrucciones:["Lee la guía y revisa un ejemplo resuelto.","Resuelve los ejercicios y justifica tus respuestas.","Socializa un resultado con un familiar o compañero y escribe una conclusión."],
+            insumos:["Cuaderno","Lápiz","Regla (si aplica)","Celular (opcional para consulta guiada)"],
+            productoFinal:"Taller resuelto, con procedimiento y una breve reflexión."
+          },
+          problemasCombinados: mk5("Problema combinado"),
+          retoCreativo:{
+            titulo:"Reto creativo",
+            descripcion:"Crea un producto sencillo (afiche, infografía o mini-guía) que explique el tema con un ejemplo de tu entorno.",
+            pasos:["Elige un tema del diagnóstico.","Crea el producto con un ejemplo real.","Incluye 3 ideas clave y 1 recomendación.","Entrega foto o archivo."],
+            evidencia:"Foto o PDF del producto final."
+          }
+        },
+        evaluacionFormativa:{ criterios: rubric() },
+        evaluacionSumativa:{ preguntas },
+        adaptacionesNEAE:["Instrucciones por pasos y ejemplo resuelto.","Tiempo adicional y apoyos visuales (tablas, organizadores)."],
+        materialesYTiempo:{
+          materiales:["Guía impresa o digital","Cuaderno","Útiles escolares"],
+          tiempoEstimadoMinutos:120,
+          sesionesSugeridas:"2 sesiones de 60 minutos"
+        },
+        criteriosSuperacion:{
+          notaMinima:3.3,
+          evidenciasAEntregar:["Taller aplicado resuelto","Ejercicios graduados completos","Evaluación sumativa con clave y corrección"]
+        }
+      };
+    }
+
+    // ======= Render JSON -> HTML (mejor salida en pantalla) =======
+    function esc(s){
+      return String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+    function renderList(items){
+      const arr = Array.isArray(items) ? items : [];
+      if(!arr.length) return "<p class='small'>Sin datos.</p>";
+      return "<ul>" + arr.map(x=>`<li>${esc(x)}</li>`).join("") + "</ul>";
+    }
+    function renderPlanJSON(data){
+      const meta = data?.meta || {};
+      const diag = data?.diagnostico || {};
+      const mp = data?.materialPractico || {};
+      const ta = mp?.tallerAplicado || {};
+      const rc = mp?.retoCreativo || {};
+      const rub = data?.evaluacionFormativa?.criterios || [];
+      const sum = data?.evaluacionSumativa?.preguntas || [];
+      const myt = data?.materialesYTiempo || {};
+      const cs = data?.criteriosSuperacion || {};
+
+      const rubricRows = (Array.isArray(rub) ? rub : []).map(c=>{
+        const lv = Array.isArray(c?.niveles) ? c.niveles : [];
+        const get = n => (lv.find(x=>String(x.nivel)===String(n))?.descriptor) || "";
+        return `<tr>
+          <td>${esc(c?.criterio || "")}</td>
+          <td>${esc(get("1"))}</td>
+          <td>${esc(get("2"))}</td>
+          <td>${esc(get("3"))}</td>
+          <td>${esc(get("4"))}</td>
+        </tr>`;
+      }).join("");
+
+      const preguntasHTML = (Array.isArray(sum) ? sum : []).map(q=>{
+        const opts = Array.isArray(q?.opciones) ? q.opciones : [];
+        return `<div class="q">
+          <div class="t">(${esc(q?.tipo || "")})</div>
+          <div>${esc(q?.id)}. ${esc(q?.enunciado || "")}</div>
+          ${opts.length ? ("<ul>"+opts.map(o=>`<li>${esc(o)}</li>`).join("")+"</ul>") : ""}
+          <div class="t">Clave: ${esc(q?.respuesta || "")}</div>
+        </div>`;
+      }).join("");
+
+      const ejerciciosHTML = (Array.isArray(mp?.ejerciciosGraduados) ? mp.ejerciciosGraduados : []).map(it=>{
+        return `<div class="q">
+          <div>${esc(it?.id)}. ${esc(it?.enunciado || "")}</div>
+          <div class="t">Respuesta: ${esc(it?.respuesta || "")}</div>
+        </div>`;
+      }).join("");
+
+      const problemasHTML = (Array.isArray(mp?.problemasCombinados) ? mp.problemasCombinados : []).map(it=>{
+        return `<div class="q">
+          <div>${esc(it?.id)}. ${esc(it?.enunciado || "")}</div>
+          <div class="t">Solución breve: ${esc(it?.solucionBreve || "")}</div>
+        </div>`;
+      }).join("");
+
+      return `<div class="plan">
+        <h3>Datos</h3>
+        <div class="kv">
+          <div class="t">Estudiante</div><div>${esc(meta.estudiante||"")}</div>
+          <div class="t">Grado / Área</div><div>${esc(meta.grado||"")} / ${esc(meta.area||"")}</div>
+          <div class="t">Nota / Nivel</div><div>${esc(meta.nota||"")} / ${esc(meta.nivel||"")}</div>
+          <div class="t">Fecha</div><div>${esc(meta.fecha||"")}</div>
+        </div>
+
+        <h3>DBA de referencia</h3>
+        ${renderList(data?.dba)}
+
+        <h3>Diagnóstico</h3>
+        <h4>Qué no se logró</h4>
+        ${renderList(diag.queNoSeLogro)}
+        <h4>Evidencias</h4>
+        ${renderList(diag.evidencias)}
+
+        <h3>Propósito de recuperación</h3>
+        <p>${esc(data?.propositoRecuperacion || "")}</p>
+
+        <h3>Secuencia didáctica</h3>
+        ${renderList(data?.secuenciaDidactica)}
+
+        <h3>Material práctico</h3>
+        <h4>Ejercicios graduados (10)</h4>
+        ${ejerciciosHTML || "<p class='small'>Sin datos.</p>"}
+
+        <h4>Taller aplicado</h4>
+        <div class="kv">
+          <div class="t">Título</div><div>${esc(ta.titulo||"")}</div>
+          <div class="t">Contexto</div><div>${esc(ta.contexto||"")}</div>
+          <div class="t">Producto final</div><div>${esc(ta.productoFinal||"")}</div>
+          <div class="t">Insumos</div><div>${esc((ta.insumos||[]).join(", "))}</div>
+        </div>
+        <h4>Instrucciones</h4>
+        ${renderList(ta.instrucciones)}
+
+        <h4>Problemas combinados (5)</h4>
+        ${problemasHTML || "<p class='small'>Sin datos.</p>"}
+
+        <h4>Reto creativo</h4>
+        <div class="kv">
+          <div class="t">Título</div><div>${esc(rc.titulo||"")}</div>
+          <div class="t">Descripción</div><div>${esc(rc.descripcion||"")}</div>
+          <div class="t">Evidencia</div><div>${esc(rc.evidencia||"")}</div>
+        </div>
+        <h4>Pasos</h4>
+        ${renderList(rc.pasos)}
+
+        <h3>Evaluación formativa</h3>
+        <h4>Rúbrica (4×4)</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>Nivel 1</th>
+              <th>Nivel 2</th>
+              <th>Nivel 3</th>
+              <th>Nivel 4</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rubricRows || "<tr><td colspan='5'>Sin rúbrica.</td></tr>"}
+          </tbody>
+        </table>
+
+        <h3>Evaluación sumativa (10) con clave</h3>
+        ${preguntasHTML || "<p class='small'>Sin preguntas.</p>"}
+
+        <h3>Adaptaciones NEAE</h3>
+        ${renderList(data?.adaptacionesNEAE)}
+
+        <h3>Materiales y tiempo</h3>
+        <div class="kv">
+          <div class="t">Materiales</div><div>${esc((myt.materiales||[]).join(", "))}</div>
+          <div class="t">Tiempo estimado</div><div>${esc(myt.tiempoEstimadoMinutos||"")} minutos</div>
+          <div class="t">Sesiones sugeridas</div><div>${esc(myt.sesionesSugeridas||"")}</div>
+        </div>
+
+        <h3>Criterios de superación</h3>
+        <div class="kv">
+          <div class="t">Nota mínima</div><div>${esc(cs.notaMinima||"3.3")}</div>
+          <div class="t">Evidencias a entregar</div><div>${esc((cs.evidenciasAEntregar||[]).join(", "))}</div>
+        </div>
+      </div>`;
     }
 
     // ======= IA: un click =======
     btnIA.onclick = async () => {
       const base = elSalida.textContent.trim();
       const area = elArea.value, grado = elGrado.value, nombre = elNombre.value.trim();
-      const prompt = buildPrompt(area, grado, nombre, base);
+      const nota = elNota.value ? String(elNota.value) : "-";
+      const c = clasificarNota(parseFloat(elNota.value));
+      const nivel = c.nivel;
+      const fechaISO = formatDateISO(new Date());
 
-      elIA.textContent = "Generando materiales con IA…";
+      const prompt = buildPrompt(area, grado, nombre, base, nota, nivel, fechaISO);
+
+      elIA.innerHTML = "<span class='muted'>Generando materiales con IA…</span>";
+      iaData = null;
+
       try{
-        let txt="";
+        let txt = "";
         if(online){
           const prov = elProv.value;
           const model = elModelo.value.trim();
           const key = elApiKey.value.trim();
-          if(!key){ elIA.textContent="🔑 Falta la API key para modo online. Cambia a modo offline o ingrésala."; return; }
+          if(!key){
+            elIA.innerHTML = "<span class='muted'>Falta la API key para modo online. Cambia a modo offline o ingrésala.</span>";
+            return;
+          }
           txt = (prov==="gemini")
             ? await callGemini(key, model, prompt)
             : await callOpenAI(key, model, prompt);
         } else {
-          txt = callOffline(prompt, area, grado);
+          // Offline produce directamente el objeto (sin modelo)
+          iaData = offlineJSON(area, grado, nombre, nota, nivel);
+          elIA.innerHTML = renderPlanJSON(iaData);
+          btnPDFIA.disabled = false;
+          return;
         }
-        elIA.textContent = txt || "Sin respuesta.";
+
+        const ctx = { online:true, prov: elProv.value, key: elApiKey.value.trim(), model: elModelo.value.trim() };
+        const data = await parseJsonWithAutoFix(txt, ctx);
+        iaData = data;
+
+        elIA.innerHTML = renderPlanJSON(data);
         btnPDFIA.disabled = false;
       }catch(e){
-        elIA.textContent = "❌ Error: " + e.message;
+        elIA.textContent = "Error: " + e.message;
+        btnPDFIA.disabled = true;
       }
     };
+// ======= PDF IA desde JSON (mejor salida) =======
+    btnPDFIA.onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
 
-btnPDFIA.onclick = () => {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
+      if(!iaData){
+        doc.text("Sin contenido IA en JSON.", 15, 20);
+        doc.save("plan_mejoramiento_IA_DBA.pdf");
+        return;
+      }
 
-  const txt = elIA.textContent || "Sin contenido IA";
+      const pageWidth  = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const marginX = 15;
+      const marginY = 18;
+      const maxWidth = pageWidth - 2 * marginX;
 
-  // Dimensiones y formato
-  const pageWidth  = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const marginX = 15;
-  const marginY = 20;
-  const lineHeight = 7;
-  const maxWidth = pageWidth - 2 * marginX;
+      let y = marginY;
 
-  // Partir texto y escribirlo en múltiples páginas
-  const lines = doc.splitTextToSize(txt, maxWidth);
-  let y = marginY;
+      function ensureSpace(h){
+        if(y + h > pageHeight - marginY){
+          doc.addPage();
+          y = marginY;
+        }
+      }
 
-  for (let i = 0; i < lines.length; i++) {
-    if (y > pageHeight - marginY) { // Salto de página
-      doc.addPage();
-      y = marginY;
-    }
-    doc.text(lines[i], marginX, y);
-    y += lineHeight;
-  }
+      function writeTitle(text){
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(14);
+        const lines = doc.splitTextToSize(String(text||""), maxWidth);
+        ensureSpace(lines.length*7);
+        doc.text(lines, marginX, y);
+        y += lines.length*7 + 2;
+      }
 
-  // ----- Footer con numeración de páginas -----
-  const pageCount = doc.internal.getNumberOfPages();
-  doc.setFontSize(10);
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    const footer = `Página ${i} de ${pageCount}`;
-    // alineado a la derecha, 10 mm desde el borde inferior
-    doc.text(footer, pageWidth - marginX, pageHeight - 10, { align: "right" });
-  }
+      function writeH(text){
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(12);
+        const lines = doc.splitTextToSize(String(text||""), maxWidth);
+        ensureSpace(lines.length*6);
+        doc.text(lines, marginX, y);
+        y += lines.length*6 + 1;
+      }
 
-  doc.save("plan_mejoramiento_IA_DBA.pdf");
+      function writeP(text){
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(10.5);
+        const lines = doc.splitTextToSize(String(text||""), maxWidth);
+        ensureSpace(lines.length*5.2);
+        doc.text(lines, marginX, y);
+        y += lines.length*5.2 + 1;
+      }
+
+      function writeList(items){
+        const arr = Array.isArray(items) ? items : [];
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(10.5);
+        for(const it of arr){
+          const bullet = "• " + String(it||"");
+          const lines = doc.splitTextToSize(bullet, maxWidth);
+          ensureSpace(lines.length*5.2);
+          doc.text(lines, marginX, y);
+          y += lines.length*5.2;
+        }
+        y += 1.5;
+      }
+
+      function writeNumbered(items){
+        const arr = Array.isArray(items) ? items : [];
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(10.5);
+        arr.forEach((it, idx)=>{
+          const t = `${idx+1}. ${String(it||"")}`;
+          const lines = doc.splitTextToSize(t, maxWidth);
+          ensureSpace(lines.length*5.2);
+          doc.text(lines, marginX, y);
+          y += lines.length*5.2;
+        });
+        y += 1.5;
+      }
+
+      function writeRubricTable(criteria){
+        const rub = Array.isArray(criteria) ? criteria : [];
+        if(!rub.length) return;
+
+        const colW = [30, 37, 37, 37, 37];
+        const x0 = marginX;
+
+        const header = ["Criterio","Nivel 1","Nivel 2","Nivel 3","Nivel 4"];
+        const lh = 5;
+        const pad = 2.2;
+
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(9.5);
+
+        function cellLines(text, w){
+          return doc.splitTextToSize(String(text||""), w - pad*2);
+        }
+
+        function rowHeight(cells){
+          const linesCount = cells.map((c,i)=>cellLines(c, colW[i]).length);
+          const maxLines = Math.max(...linesCount, 1);
+          return maxLines*lh + pad*2;
+        }
+
+        function drawRow(cells, h){
+          ensureSpace(h + 2);
+          let x = x0;
+          for(let i=0;i<cells.length;i++){
+            doc.rect(x, y, colW[i], h);
+            const lines = cellLines(cells[i], colW[i]);
+            doc.text(lines, x + pad, y + pad + lh - 1);
+            x += colW[i];
+          }
+          y += h;
+        }
+
+        const hH = rowHeight(header);
+        drawRow(header, hH);
+
+        rub.forEach(c=>{
+          const lv = Array.isArray(c?.niveles) ? c.niveles : [];
+          const get = n => lv.find(x=>String(x.nivel)===String(n))?.descriptor || "";
+          const row = [ c?.criterio || "", get(1), get(2), get(3), get(4) ];
+          const h = rowHeight(row);
+          drawRow(row, h);
+        });
+
+        y += 3;
+      }
+
+      // ===== Contenido PDF desde JSON =====
+      writeTitle("Plan de Mejoramiento (DBA MEN) - Generado por IA");
+
+      const meta = iaData.meta || {};
+      writeH("Datos");
+      writeList([
+        `Estudiante: ${meta.estudiante || ""}`,
+        `Grado: ${meta.grado || ""} | Área: ${meta.area || ""}`,
+        `Nota: ${meta.nota || ""} | Nivel: ${meta.nivel || ""}`,
+        `Fecha: ${meta.fecha || ""}`
+      ]);
+
+      writeH("DBA de referencia");
+      writeList(iaData.dba);
+
+      writeH("Diagnóstico");
+      writeP("Qué no se logró:");
+      writeList(iaData.diagnostico?.queNoSeLogro);
+      writeP("Evidencias:");
+      writeList(iaData.diagnostico?.evidencias);
+
+      writeH("Propósito de recuperación");
+      writeP(iaData.propositoRecuperacion);
+
+      writeH("Secuencia didáctica");
+      writeNumbered(iaData.secuenciaDidactica);
+
+      writeH("Material práctico - Ejercicios graduados (10)");
+      (iaData.materialPractico?.ejerciciosGraduados || []).forEach(it=>{
+        writeP(`${it.id}. ${it.enunciado}`);
+        writeP(`Respuesta: ${it.respuesta}`);
+        y += 1;
+      });
+
+      writeH("Material práctico - Taller aplicado");
+      const ta = iaData.materialPractico?.tallerAplicado || {};
+      writeList([
+        `Título: ${ta.titulo || ""}`,
+        `Contexto: ${ta.contexto || ""}`,
+        `Insumos: ${(ta.insumos || []).join(", ")}`,
+        `Producto final: ${ta.productoFinal || ""}`
+      ]);
+      writeP("Instrucciones:");
+      writeNumbered(ta.instrucciones);
+
+      writeH("Material práctico - Problemas combinados (5)");
+      (iaData.materialPractico?.problemasCombinados || []).forEach(it=>{
+        writeP(`${it.id}. ${it.enunciado}`);
+        writeP(`Solución breve: ${it.solucionBreve}`);
+        y += 1;
+      });
+
+      writeH("Material práctico - Reto creativo");
+      const rc = iaData.materialPractico?.retoCreativo || {};
+      writeList([
+        `Título: ${rc.titulo || ""}`,
+        `Descripción: ${rc.descripcion || ""}`,
+        `Evidencia: ${rc.evidencia || ""}`
+      ]);
+      writeP("Pasos:");
+      writeNumbered(rc.pasos);
+
+      writeH("Evaluación formativa - Rúbrica 4×4");
+      writeRubricTable(iaData.evaluacionFormativa?.criterios);
+
+      writeH("Evaluación sumativa (10) con clave");
+      (iaData.evaluacionSumativa?.preguntas || []).forEach(q=>{
+        writeP(`${q.id}. (${q.tipo}) ${q.enunciado}`);
+        if(Array.isArray(q.opciones) && q.opciones.length){
+          writeList(q.opciones);
+        }
+        writeP(`Clave: ${q.respuesta}`);
+        y += 1;
+      });
+
+      writeH("Adaptaciones NEAE");
+      writeList(iaData.adaptacionesNEAE);
+
+      writeH("Materiales y tiempo");
+      const myt = iaData.materialesYTiempo || {};
+      writeList([
+        `Materiales: ${(myt.materiales || []).join(", ")}`,
+        `Tiempo estimado: ${myt.tiempoEstimadoMinutos || ""} minutos`,
+        `Sesiones sugeridas: ${myt.sesionesSugeridas || ""}`
+      ]);
+
+      writeH("Criterios de superación");
+      const cs = iaData.criteriosSuperacion || {};
+      writeList([
+        `Nota mínima: ${cs.notaMinima}`,
+        `Evidencias a entregar: ${(cs.evidenciasAEntregar || []).join(", ")}`
+      ]);
+
+      // Footer con numeración
+      const pageCount = doc.internal.getNumberOfPages();
+      doc.setFontSize(9.5);
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.text(`Página ${i} de ${pageCount}`, pageWidth - marginX, pageHeight - 10, { align: "right" });
+      }
+
+      doc.save("plan_mejoramiento_IA_DBA.pdf");
     };
   </script>
 </body>
