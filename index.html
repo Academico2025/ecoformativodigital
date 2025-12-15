@@ -77,6 +77,7 @@
             <option>Ciencias Sociales</option>
             <option>Inglés</option>
             <option>Ética y Valores</option>
+            <option>Filosofía</option>
           </select>
         </div>
         <div>
@@ -154,46 +155,563 @@
     // Síntesis pedagógicas operativas (sirven para contextualizar el prompt).
     const DBA_MINI = {
       "Matemáticas": {
-        "1°": ["Conteo y valor posicional inicial","Suma y resta en contexto","Figuras planas básicas","Medición no convencional","Patrones simples"],
-        "2°": ["Suma y resta con reagrupación","Introducción a multiplicación (repetición)","Longitud y tiempo básicos","Patrones y series","Resolución de problemas simples"],
-        "3°": ["Multiplicación y división básicas","Fracciones unitarias","Perímetro","Gráficas de barras simples","Problemas aritméticos de 1–2 pasos"],
-        "4°": ["Multiplicación/división con números mayores","Fracciones y decimales básicos","Área y perímetro","Ángulos y líneas","Representación de datos"],
-        "5°": ["Operaciones con fracciones/decimales básicos","Proporcionalidad inicial","Volumen básico","Coordenadas I cuadrante","Problemas multietapa"]
+        "1°": [
+          "Conteo, lectura y escritura de números naturales (hasta 100)",
+          "Comparación y orden (mayor/menor/igual) con material concreto",
+          "Suma y resta en situaciones cotidianas (sin y con reagrupación simple)",
+          "Figuras planas básicas (triángulo, cuadrado, rectángulo, círculo) y sus propiedades",
+          "Patrones, secuencias y estimación con referentes del entorno"
+        ],
+        "2°": [
+          "Suma y resta con reagrupación y verificación de resultados",
+          "Introducción a la multiplicación como sumas repetidas y arreglos",
+          "Medición de longitud, masa y tiempo con unidades convencionales sencillas",
+          "Lectura e interpretación de tablas y pictogramas simples",
+          "Resolución de problemas de 1–2 pasos con datos del contexto"
+        ],
+        "3°": [
+          "Multiplicación y división (relación inversa) en situaciones reales",
+          "Fracciones como partes de un todo (mitades, tercios, cuartos) y representación",
+          "Perímetro en figuras regulares y uso de unidades",
+          "Construcción y lectura de gráficas de barras",
+          "Estrategias de cálculo mental y estimación para validar soluciones"
+        ],
+        "4°": [
+          "Fracciones equivalentes y comparación; decimales en contextos de medida",
+          "Operaciones con números naturales (multi‑cifra) y estrategias de cálculo",
+          "Área y perímetro de rectángulos y triángulos en problemas aplicados",
+          "Ángulos, paralelas/perpendiculares y clasificación de triángulos",
+          "Análisis de datos: media/mediana/moda con conjuntos pequeños"
+        ],
+        "5°": [
+          "Operaciones con fracciones y decimales (situaciones de dinero/medidas)",
+          "Proporcionalidad inicial (razón) y porcentajes sencillos",
+          "Volumen de prismas rectangulares con unidades cúbicas",
+          "Plano cartesiano (I cuadrante) y lectura de coordenadas",
+          "Modelación y resolución de problemas multietapa con explicación del procedimiento"
+        ],
+        "6°": [
+          "Números enteros: representación, comparación y operaciones en contextos (temperatura, deudas)",
+          "Fracciones y decimales: equivalencias, operaciones y problemas de medida",
+          "Razón, proporción y porcentaje: interpretación y resolución de situaciones",
+          "Geometría: perímetro, área y ángulos con construcciones y justificaciones",
+          "Estadística y probabilidad: tablas, gráficos, promedio y eventos simples"
+        ],
+        "7°": [
+          "Expresiones algebraicas: uso de letras, simplificación y evaluación",
+          "Ecuaciones de primer grado y problemas que se modelan con ecuaciones",
+          "Razón, proporcionalidad directa e inversa en contextos (escala, velocidad)",
+          "Geometría: propiedades de triángulos y cuadriláteros; congruencia básica",
+          "Datos: variabilidad, interpretación crítica de gráficos y conclusiones"
+        ],
+        "8°": [
+          "Sistemas de ecuaciones lineales (métodos gráficos y algebraicos) en problemas",
+          "Polinomios: operaciones, productos notables y factorización básica",
+          "Funciones: relación entre variables, función lineal y su interpretación",
+          "Teorema de Pitágoras y aplicaciones en problemas geométricos",
+          "Probabilidad: conteo simple, eventos compuestos y simulaciones"
+        ],
+        "9°": [
+          "Función cuadrática: representaciones, parámetros y modelación de situaciones",
+          "Radicales y potencias: propiedades y simplificación en contextos",
+          "Semejanza de triángulos y trigonometría inicial (razones trigonométricas)",
+          "Geometría analítica: distancia, punto medio y pendiente",
+          "Estadística: dispersión (rango/desviación básica) e interpretación de datos"
+        ],
+        "10°": [
+          "Funciones polinómicas, exponenciales y logarítmicas: análisis e interpretación",
+          "Trigonometría: identidades básicas y resolución de triángulos",
+          "Conteo y combinatoria: permutaciones, combinaciones y principio multiplicativo",
+          "Probabilidad condicional e independencia con problemas contextualizados",
+          "Modelación matemática: construcción de modelos, validación y comunicación"
+        ],
+        "11°": [
+          "Límites y continuidad: interpretación gráfica y numérica",
+          "Derivada: concepto, reglas y aplicaciones (tasa de cambio, optimización)",
+          "Integral básica: interpretación como acumulación y área bajo la curva",
+          "Estadística: muestreo, inferencia básica y lectura crítica de resultados",
+          "Proyecto de modelación: planteamiento, solución y argumentación matemática"
+        ]
       },
+
       "Lengua Castellana": {
-        "1°": ["Conciencia fonológica y decodificación","Comprensión literal de textos cortos","Producción de oraciones","Vocabulario de aula","Normas básicas de escritura"],
-        "2°": ["Comprensión literal e inferencial inicial","Secuencias y personajes","Textos instructivos cortos","Ortografía básica","Narración breve"],
-        "3°": ["Comprensión inferencial básica","Ideas principales y secundarias","Textos expositivos simples","Coherencia y cohesión inicial","Plan de escritura"],
-        "4°": ["Comprensión crítica inicial","Resumen y paráfrasis","Tipos textuales (narr., descript., expositivo)","Ortografía intermedia","Producción de párrafos"],
-        "5°": ["Comprensión crítica y propósito del autor","Argumentación inicial","Textos informativos más extensos","Cohesión y conectores","Revisión y edición del texto"]
+        "1°": [
+          "Conciencia fonológica y correspondencia sonido‑letra",
+          "Lectura de palabras y oraciones breves con comprensión literal",
+          "Producción de oraciones con inicio‑nudo‑cierre (apoyo de imágenes)",
+          "Vocabulario del entorno escolar y familiar",
+          "Convenciones básicas: mayúscula inicial y punto final"
+        ],
+        "2°": [
+          "Comprensión literal e inferencial inicial en textos cortos",
+          "Secuencia de eventos y personajes en narraciones",
+          "Producción de textos breves (cuento/nota/instrucciones) con claridad",
+          "Ortografía básica (b/v, c/s/z inicial, uso de h frecuente) en palabras comunes",
+          "Escucha y participación oral respetando turnos"
+        ],
+        "3°": [
+          "Ideas principales y detalles en textos informativos y narrativos",
+          "Inferencias sencillas: causa‑efecto, propósito y predicción",
+          "Cohesión: conectores básicos (y, pero, porque, entonces) en párrafos",
+          "Planificación, borrador y revisión de un texto (mínimo 2 versiones)",
+          "Exposición oral corta con apoyo visual"
+        ],
+        "4°": [
+          "Comprensión crítica inicial: intención del autor y punto de vista",
+          "Resumen y paráfrasis de textos leídos",
+          "Tipos textuales: narrativo, descriptivo y expositivo (estructura)",
+          "Ortografía intermedia (tildes en agudas/graves/esdrújulas) y puntuación básica",
+          "Producción de párrafos coherentes con tema y cierre"
+        ],
+        "5°": [
+          "Lectura crítica: fuentes, evidencias y sesgos en textos sencillos",
+          "Argumentación básica: opinión sustentada con razones y ejemplos",
+          "Uso de conectores y pronombres para cohesión textual",
+          "Revisión y edición: ortografía, puntuación y claridad del mensaje",
+          "Producción de textos más extensos (1–2 páginas) con estructura definida"
+        ],
+        "6°": [
+          "Comprensión e interpretación de textos literarios y no literarios (estructura y propósito)",
+          "Producción de textos expositivos con organizadores (título, subtítulos, párrafos)",
+          "Argumentación inicial: tesis simple, razones y ejemplos",
+          "Recursos del lenguaje: metáfora, comparación, adjetivación y tono",
+          "Oralidad: exposición breve, escucha activa y retroalimentación"
+        ],
+        "7°": [
+          "Análisis de narrador, personajes y tiempo en cuentos y novelas cortas",
+          "Escritura de textos argumentativos (opinión) con evidencia del texto",
+          "Citación básica de fuentes y paráfrasis responsable",
+          "Gramática funcional: categorías, concordancia y uso de conectores",
+          "Debate guiado: normas, roles y construcción de acuerdos"
+        ],
+        "8°": [
+          "Lectura crítica: identificar falacias simples y estrategias persuasivas",
+          "Producción de textos explicativos (causa‑consecuencia, problema‑solución)",
+          "Plan lector: reseña y comentario crítico de una obra",
+          "Oralidad: presentación con apoyo digital y uso de recursos retóricos",
+          "Escritura creativa: microcuento/poesía con revisión de estilo"
+        ],
+        "9°": [
+          "Análisis de géneros discursivos (crónica, columna, ensayo breve)",
+          "Ensayo corto: tesis, argumentos, contraargumento y conclusión",
+          "Competencia mediática: verificación de información y lectura de titulares",
+          "Sintaxis: oraciones simples/compuestas y puntuación avanzada",
+          "Proyecto de investigación escolar: preguntas, fuentes y reporte"
+        ],
+        "10°": [
+          "Lectura de textos filosóficos/literarios: interpretación y diálogo con ideas",
+          "Ensayo argumentativo: estructura, evidencias, citas y bibliografía básica",
+          "Producción multimodal: infografía, podcast o video con guion",
+          "Análisis crítico de discursos (publicidad, redes, política) y sus efectos",
+          "Oralidad avanzada: sustentación de un proyecto con preguntas del público"
+        ],
+        "11°": [
+          "Lectura crítica y comparativa de obras y corrientes (intertextualidad)",
+          "Escritura académica: artículo corto o monografía escolar con normas básicas",
+          "Argumentación avanzada: refutación, matices y calidad de evidencia",
+          "Ética de la comunicación: derechos de autor, citación y uso responsable de IA",
+          "Sustentación final: defensa oral con rúbrica y autoevaluación"
+        ]
       },
+
       "Ciencias Naturales": {
-        "1°": ["Cuerpo y sentidos","Seres vivos vs no vivos","Partes de la planta","Agua y clima","Seguridad en experiencias"],
-        "2°": ["Animales y hábitats","Funciones del cuerpo","Estados de la materia","Cuidado ambiental","Medición básica"],
-        "3°": ["Ciclo del agua y vida de plantas","Fuentes de energía simples","Uso de instrumentos (long., temp.)","Registros en tablas","Método científico básico"],
-        "4°": ["Ecosistemas y cadenas tróficas","Mezclas y soluciones","Fuerza y movimiento","Indagación guiada","Cuidado del entorno"],
-        "5°": ["Sistemas del cuerpo (resp., dig., circ.)","Transformaciones de energía","Interpretación de datos y gráficas","Exp. con control de variables","Acciones de salud y ambiente"]
+        "1°": [
+          "Cuerpo humano y sentidos: cuidado y hábitos saludables",
+          "Seres vivos vs. no vivos: características observables",
+          "Partes de la planta y necesidades para crecer",
+          "Agua y clima: observaciones simples del entorno",
+          "Seguridad y normas básicas en actividades de exploración"
+        ],
+        "2°": [
+          "Animales y hábitats: clasificación básica y adaptación",
+          "Funciones del cuerpo: nutrición y movimiento",
+          "Estados de la materia en experiencias sencillas",
+          "Cuidado ambiental: residuos, agua y energía en casa/escuela",
+          "Registro de observaciones en tablas simples"
+        ],
+        "3°": [
+          "Ciclo del agua y su relación con la vida",
+          "Fuentes de energía (luz, calor, movimiento) en el entorno",
+          "Cambios de estado y mezclas (observación y comparación)",
+          "Salud: prevención de enfermedades comunes",
+          "Método científico básico: pregunta‑hipótesis‑prueba‑conclusión"
+        ],
+        "4°": [
+          "Ecosistemas: cadenas tróficas y relaciones entre seres vivos",
+          "Mezclas y soluciones: separación por métodos sencillos",
+          "Fuerza y movimiento: empujar, halar, fricción (experimentos guiados)",
+          "Ciclo de vida y reproducción en plantas y animales",
+          "Indagación: control de una variable y registro de resultados"
+        ],
+        "5°": [
+          "Sistemas del cuerpo humano (respiratorio, digestivo, circulatorio) y cuidado",
+          "Energía: transformaciones (eléctrica, térmica, mecánica) en dispositivos cotidianos",
+          "Materia: propiedades, cambios físicos/químicos en ejemplos simples",
+          "Ambiente y salud: factores de riesgo y acciones preventivas",
+          "Diseño de una indagación escolar con conclusiones sustentadas"
+        ],
+        "6°": [
+          "Célula: estructura básica, funciones y niveles de organización",
+          "Ecosistemas: ciclos biogeoquímicos y equilibrio ecológico",
+          "Materia: mezclas, sustancias y métodos de separación",
+          "Fuerzas: peso, fricción y representación con diagramas sencillos",
+          "Indagación: variables, medición, registro y comunicación de resultados"
+        ],
+        "7°": [
+          "Nutrición y sistemas del cuerpo: relación con salud y rendimiento",
+          "Genética básica: herencia, rasgos y variabilidad",
+          "Química: átomos, moléculas, enlace sencillo y reacciones cotidianas",
+          "Energía y calor: cambios de temperatura y transferencia",
+          "Proyecto: plantear y ejecutar un experimento con control de variables"
+        ],
+        "8°": [
+          "Ecología: poblaciones, comunidades y dinámica de ecosistemas",
+          "Química: tabla periódica, valencia y formulación básica",
+          "Reacciones químicas: balanceo simple y evidencias de reacción",
+          "Física: movimiento (velocidad/aceleración) y gráficos básicos",
+          "Tecnología y ciencia: impacto social y ambiental de innovaciones"
+        ],
+        "9°": [
+          "Evolución: evidencias, selección natural y biodiversidad",
+          "Química: soluciones, concentración y pH en contextos",
+          "Electricidad: circuitos, corriente, voltaje y resistencia",
+          "Ondas: sonido y luz; fenómenos de reflexión y refracción",
+          "Argumentación científica: leer datos, discutir errores y concluir"
+        ],
+        "10°": [
+          "Biología: ADN, síntesis de proteínas y biotecnología básica",
+          "Química: estequiometría y rendimiento en reacciones",
+          "Física: energía, trabajo y conservación en sistemas",
+          "Termodinámica básica: calor, temperatura y procesos",
+          "Investigación: diseño experimental, análisis de datos y reporte"
+        ],
+        "11°": [
+          "Biología: fisiología y homeostasis; salud pública y prevención",
+          "Química: equilibrio químico, ácidos‑bases y electroquímica básica",
+          "Física: campo eléctrico/magnético y aplicaciones tecnológicas",
+          "Ciencia y sociedad: ética, riesgo, evidencia y toma de decisiones",
+          "Proyecto final: problema, método, resultados, discusión y conclusiones"
+        ]
       },
+
       "Ciencias Sociales": {
-        "1°": ["Identidad y familia","Entorno cercano","Normas de convivencia","Puntos cardinales básicos","Símbolos patrios"],
-        "2°": ["Comunidad y oficios","Mapas simples","Pasado y presente","Derechos y deberes","Cuidado de lo público"],
-        "3°": ["Regiones naturales básicas","Cartografía elemental","Hechos y cambios históricos","Instituciones locales","Economía cotidiana"],
-        "4°": ["Regiones de Colombia","Lectura de mapas y escalas simples","Procesos históricos clave","Participación ciudadana","Diversidad cultural"],
-        "5°": ["Relación sociedad-ambiente","Cartografía intermedia","Linea del tiempo y fuentes","Organización del Estado","Economía y comercio básico"]
+        "1°": [
+          "Identidad, familia y comunidad: roles y normas de convivencia",
+          "Ubicación básica: puntos cardinales y lugares del entorno",
+          "Símbolos patrios y sentido de pertenencia",
+          "Derechos y deberes en la escuela",
+          "Cuidado de lo público y resolución pacífica de conflictos"
+        ],
+        "2°": [
+          "Organización de la comunidad: oficios, servicios y normas",
+          "Representación del espacio: croquis y mapas simples",
+          "Pasado y presente: relatos familiares y cambios",
+          "Diversidad cultural cercana y respeto",
+          "Participación: acuerdos y responsabilidades"
+        ],
+        "3°": [
+          "Regiones naturales de Colombia (nociones básicas) y clima",
+          "Cartografía elemental: símbolos, leyenda y orientación",
+          "Hechos y personajes históricos locales/ nacionales (nociones)",
+          "Instituciones locales y formas de participación",
+          "Economía cotidiana: intercambio, ahorro y consumo responsable"
+        ],
+        "4°": [
+          "Regiones de Colombia: relieve, hidrográfica y poblamiento",
+          "Lectura de mapas y escalas simples",
+          "Procesos históricos clave de Colombia (nociones generales)",
+          "Participación ciudadana: mecanismos básicos",
+          "Diversidad étnica y cultural: reconocimiento y respeto"
+        ],
+        "5°": [
+          "Relación sociedad‑ambiente: riesgos y cuidado del territorio",
+          "Cartografía intermedia: escala, coordenadas y comparación de mapas",
+          "Historia: fuentes (primarias/secundarias) y línea de tiempo",
+          "Organización del Estado: ramas del poder (nociones)",
+          "Economía: producción, comercio y trabajo (nociones)"
+        ],
+        "6°": [
+          "Geografía humana: población, migraciones y urbanización",
+          "Historia: civilizaciones antiguas y su legado cultural",
+          "Cartografía: coordenadas, escala y lectura crítica de mapas",
+          "Ciudadanía: normas, derechos humanos y convivencia",
+          "Investigación social: preguntas, fuentes y análisis básico"
+        ],
+        "7°": [
+          "Historia: Edad Media y modernidad temprana (procesos y cambios)",
+          "Colombia: formación del territorio y diversidad regional",
+          "Economía: oferta, demanda y sectores económicos",
+          "Participación: democracia escolar y control social",
+          "Lectura crítica de medios: información, opinión y evidencia"
+        ],
+        "8°": [
+          "Historia: revoluciones (industrial, políticas) y transformaciones sociales",
+          "Colombia s. XIX: independencia, repúblicas y conflictos",
+          "Geografía: recursos naturales y conflictos socioambientales",
+          "Ciudadanía digital: derechos, riesgos y convivencia en redes",
+          "Proyecto: análisis de un problema local con propuestas"
+        ],
+        "9°": [
+          "Colombia s. XX: violencia, urbanización y cambios políticos",
+          "Mundo contemporáneo: guerras, globalización y organismos internacionales",
+          "Economía: desigualdad, empleo y políticas públicas (nociones)",
+          "Constitución y Estado Social de Derecho (nociones)",
+          "Métodos: entrevistas/encuestas sencillas y presentación de hallazgos"
+        ],
+        "10°": [
+          "Pensamiento histórico: causalidad, continuidad/cambio y fuentes",
+          "Sistema político colombiano: instituciones y participación",
+          "Economía: indicadores (PIB, inflación) e interpretación crítica",
+          "Geopolítica: conflictos y cooperación regional/global",
+          "Proyecto de investigación: problema, marco, método y conclusiones"
+        ],
+        "11°": [
+          "Memoria histórica y construcción de paz: análisis de casos colombianos",
+          "Derechos humanos y ciudadanía: dilemas y deliberación pública",
+          "Economía y sociedad: desarrollo, sostenibilidad y bienestar",
+          "Lectura crítica de discursos: propaganda, polarización y evidencia",
+          "Sustentación de investigación social con fuentes y argumentos"
+        ]
       },
+
       "Inglés": {
-        "1°": ["Greetings y classroom objects","Colors y numbers 1–20","Parts of the body","Simple commands","Songs and chants"],
-        "2°": ["Family y food","Animals y clothes","Basic Q&A (What is this?)","Short sentences + pictures","Phonics inicial"],
-        "3°": ["Daily routines (present)","Prepositions (in/on/under)","Likes/Dislikes","Main idea (short texts)","Pronunciation patterns"],
-        "4°": ["Weather & places","Comparatives & superlatives","Giving directions","Paragraph writing (and/but/because)","Reading for detail"],
-        "5°": ["Past simple (went/played)","Going to (plans)","Reading: main idea & purpose","Core academic vocab","Short writing 3–4 lines"]
+        "1°": [
+          "Greetings, classroom objects y números básicos",
+          "Colors, family y parts of the body",
+          "Simple commands (stand up, sit down) y rutinas de aula",
+          "Songs, chants y rimas para pronunciación inicial",
+          "Vocabulario básico con imágenes (A1 inicio)"
+        ],
+        "2°": [
+          "Animals, food, clothes y gustos (I like / I don't like)",
+          "Preguntas y respuestas básicas (What is this? / It is...)",
+          "Present simple en frases cortas (I have / I am)",
+          "Comprensión de textos muy breves con apoyo visual",
+          "Phonics y pronunciación de sonidos frecuentes"
+        ],
+        "3°": [
+          "Daily routines (present simple) y adverbs of frequency básicos",
+          "Prepositions of place (in/on/under/next to)",
+          "Short reading: main idea en textos cortos",
+          "Writing: sentences + connectors (and/but) con guía",
+          "Speaking: role plays simples (A1)"
+        ],
+        "4°": [
+          "Weather, places, directions (turn left/right) en contexto",
+          "Comparatives/superlatives básicos",
+          "Reading for detail en textos cortos (A1+)",
+          "Writing: short paragraphs (3–5 sentences) con conectores",
+          "Listening: identificar información específica"
+        ],
+        "5°": [
+          "Past simple regular/irregular en historias cortas",
+          "Going to / would like para planes y preferencias",
+          "Reading: propósito del texto y vocabulario en contexto",
+          "Writing: short texts (6–8 sentences) con revisión",
+          "Speaking: presentaciones cortas y preguntas"
+        ],
+        "6°": [
+          "Present simple vs present continuous en situaciones cotidianas",
+          "There is/There are y cuantificadores (some/any/many/much)",
+          "Reading: identificar idea principal y detalles en textos A2",
+          "Writing: e‑mails/notes breves con estructura",
+          "Speaking: describir personas, lugares y rutinas (A2)"
+        ],
+        "7°": [
+          "Past simple y past continuous en narraciones",
+          "Modal verbs (can/must/should) para normas y recomendaciones",
+          "Reading: inferencias básicas y vocabulario por contexto",
+          "Writing: paragraphs con topic sentence y cierre",
+          "Listening/Speaking: diálogos y role plays (A2+)"
+        ],
+        "8°": [
+          "Future forms (will/going to/present) y planes",
+          "Comparatives, conditionals 0/1 en contextos",
+          "Reading: textos informativos A2–B1 y resumen",
+          "Writing: opinion paragraph con razones",
+          "Speaking: debates guiados y presentaciones (B1 inicio)"
+        ],
+        "9°": [
+          "Reported speech básico y relative clauses",
+          "Conditionals 1/2 en situaciones reales",
+          "Reading: textos B1 con propósito, tono y evidencia",
+          "Writing: short essay (intro‑body‑conclusion) guiado",
+          "Listening: ideas generales vs detalles (B1)"
+        ],
+        "10°": [
+          "Passive voice y discourse markers",
+          "Argumentación oral: agreeing/disagreeing, giving reasons",
+          "Reading: artículos B1–B2 (identificar sesgos y evidencia)",
+          "Writing: essay argumentativo con citas simples",
+          "Project: presentación multimedia en inglés (B1–B2)"
+        ],
+        "11°": [
+          "Advanced grammar review (tenses, modals, conditionals) aplicado",
+          "Academic vocabulary y estrategias de lectura rápida",
+          "Writing: report/essay con coherencia y corrección",
+          "Speaking: debate y sustentación de proyectos",
+          "Listening: conferencias cortas y toma de notas (B2 objetivo)"
+        ]
       },
+
       "Ética y Valores": {
-        "1°": ["Autocuidado y empatía","Normas en el aula","Resolución pacífica básica","Respeto por la diferencia","Trabajo en equipo"],
-        "2°": ["Solidaridad y honestidad","Responsabilidad en casa/escuela","Cuidado del entorno","Diálogo y escucha","Reglas y consecuencias"],
-        "3°": ["Convivencia y diversidad","Conflictos y acuerdos","Participación y liderazgo","Cuidado de lo público","Proyecto de vida inicial"],
-        "4°": ["Ciudadanía y derechos","Ética del cuidado","Resolución de conflictos","Normas y acuerdos","Ambiente y corresponsabilidad"],
-        "5°": ["Justicia y respeto","Debate y argumentación","Ciudadanía digital","Cuidado socioemocional","Servicio a la comunidad"]
+        "1°": [
+          "Autocuidado y reconocimiento de emociones",
+          "Empatía y respeto por los demás",
+          "Normas básicas del aula y convivencia",
+          "Resolución pacífica de conflictos (pasos simples)",
+          "Trabajo en equipo y cooperación"
+        ],
+        "2°": [
+          "Honestidad y responsabilidad en tareas y acuerdos",
+          "Diálogo y escucha activa",
+          "Reglas y consecuencias: toma de decisiones",
+          "Cuidado del entorno y de lo público",
+          "Reconocimiento de diferencias y respeto"
+        ],
+        "3°": [
+          "Convivencia y diversidad: inclusión y trato digno",
+          "Conflictos y acuerdos: mediación básica",
+          "Liderazgo positivo y servicio",
+          "Proyecto de vida inicial: metas y hábitos",
+          "Ciudadanía: derechos/deberes en el contexto escolar"
+        ],
+        "4°": [
+          "Ciudadanía y derechos: situaciones cotidianas",
+          "Ética del cuidado: cuerpo, ambiente y relaciones",
+          "Comunicación asertiva y manejo de conflictos",
+          "Normas y acuerdos: construcción participativa",
+          "Corresponsabilidad: familia‑escuela‑comunidad"
+        ],
+        "5°": [
+          "Justicia y respeto: trato equitativo",
+          "Debate y argumentación con respeto",
+          "Ciudadanía digital: convivencia y seguridad básica",
+          "Autonomía y autocontrol emocional",
+          "Servicio a la comunidad: acciones solidarias"
+        ],
+        "6°": [
+          "Identidad, autoestima y proyecto personal",
+          "Toma de decisiones responsables y manejo de presiones",
+          "Resolución de conflictos: negociación y mediación",
+          "Derechos humanos: dignidad, igualdad y no discriminación",
+          "Ciudadanía digital: huella digital, privacidad y ciberconvivencia"
+        ],
+        "7°": [
+          "Convivencia y construcción de normas con enfoque restaurativo",
+          "Ética del cuidado: salud mental y bienestar",
+          "Participación democrática y liderazgo ético",
+          "Prevención de violencias y cuidado de sí y del otro",
+          "Dilemas éticos: razones, consecuencias y valores"
+        ],
+        "8°": [
+          "Justicia social: equidad, inclusión y solidaridad",
+          "Ética y medios: desinformación, discurso de odio y responsabilidad",
+          "Afectividad y sexualidad responsable (enfoque de derechos)",
+          "Proyecto de vida: metas, riesgos y protección",
+          "Acción comunitaria: diagnóstico y plan de mejora"
+        ],
+        "9°": [
+          "Ciudadanía y Constitución: convivencia, participación y control social",
+          "Dilemas morales: argumentación y contraargumento",
+          "Ética ambiental: sostenibilidad y consumo responsable",
+          "Prevención de discriminación y promoción de derechos",
+          "Proyecto: intervención ética en un problema escolar/comunitario"
+        ],
+        "10°": [
+          "Ética aplicada: bioética, tecnología e impacto social",
+          "Participación ciudadana: deliberación y acuerdos",
+          "Conflicto y paz: enfoques de reconciliación y justicia",
+          "Derechos, deberes y responsabilidad civil",
+          "Análisis crítico de casos: evidencia, postura y conclusiones"
+        ],
+        "11°": [
+          "Ética y proyecto de vida: sentido, propósito y bienestar",
+          "Ciudadanía global: derechos humanos y convivencia intercultural",
+          "Ética de la información: fuentes, sesgos, autoría y uso responsable de IA",
+          "Toma de decisiones éticas en situaciones complejas",
+          "Proyecto final: propuesta argumentada para un reto social"
+        ]
+      },
+
+      "Filosofía": {
+        "1°": [
+          "Asombro y preguntas sobre el mundo (¿por qué? ¿cómo?)",
+          "Distinguir hechos y opiniones con ejemplos cotidianos",
+          "Escucha y diálogo: respetar turnos y razones simples",
+          "Valores y decisiones: elegir entre opciones y justificar",
+          "Relatos y dilemas sencillos para pensar en lo correcto"
+        ],
+        "2°": [
+          "Preguntas filosóficas: identidad, amistad, verdad y justicia (nociones)",
+          "Argumentos simples: porque… entonces… (razón y conclusión)",
+          "Lenguaje: significado de palabras y ambigüedades básicas",
+          "Diálogo: acuerdos, desacuerdos y respeto",
+          "Dilemas cotidianos: consecuencias y empatía"
+        ],
+        "3°": [
+          "Pensamiento crítico: comparar ideas y dar ejemplos",
+          "Causa y consecuencia en explicaciones sencillas",
+          "Verdad y evidencia: ¿cómo sabemos? (fuentes del entorno)",
+          "Reglas para conversar: preguntar, aclarar y sintetizar",
+          "Historias y preguntas sobre el bien común"
+        ],
+        "4°": [
+          "Conceptos: libertad, responsabilidad, justicia (nociones)",
+          "Razones y ejemplos para defender una idea",
+          "Dilemas morales: analizar opciones y consecuencias",
+          "Lectura de textos cortos y conversación guiada",
+          "Cuidado del entorno: reflexión sobre acciones y deberes"
+        ],
+        "5°": [
+          "Identidad y proyecto de vida: metas y hábitos",
+          "Pensamiento crítico: detectar generalizaciones y prejuicios simples",
+          "Argumentación: tesis simple, razones y conclusión",
+          "Ética de la convivencia: normas y acuerdos",
+          "Preguntas sobre conocimiento: experiencia, ciencia y opinión"
+        ],
+        "6°": [
+          "Introducción a la filosofía: asombro, pregunta y reflexión",
+          "Argumento: premisas, conclusión y evaluación de razones",
+          "Lógica informal: ejemplos de falacias simples (ad hominem, generalización)",
+          "Ética: acciones, consecuencias y normas (dilemas)",
+          "Filosofía y vida cotidiana: decisiones y proyectos personales"
+        ],
+        "7°": [
+          "Teoría del conocimiento: percepción, memoria y justificación (nociones)",
+          "Lenguaje y significado: ambigüedad, metáfora y definición",
+          "Ética y ciudadanía: justicia, derechos y deberes (nociones)",
+          "Pensamiento crítico: evaluar fuentes y evidencias",
+          "Escritura filosófica breve: pregunta, postura y razones"
+        ],
+        "8°": [
+          "Historia de la filosofía: Grecia y Edad Media (ideas centrales)",
+          "Antropología filosófica: ser humano, cultura y libertad",
+          "Lógica: validez, ejemplos y contraejemplos",
+          "Ética aplicada: convivencia, redes y responsabilidad",
+          "Debate guiado: argumentos, contraargumentos y acuerdos"
+        ],
+        "9°": [
+          "Modernidad: racionalismo/empirismo (nociones) y su impacto",
+          "Filosofía política: poder, Estado y democracia (nociones)",
+          "Dilemas éticos complejos: criterios y justificación",
+          "Pensamiento crítico: sesgos, falacias y evidencia",
+          "Ensayo breve: tesis, argumentos, objeción y respuesta"
+        ],
+        "10°": [
+          "Filosofía contemporánea: lenguaje, ciencia y sociedad (nociones)",
+          "Ética: teorías (deontología, utilitarismo, virtud) en casos",
+          "Filosofía política: libertad, justicia y derechos humanos (nociones)",
+          "Argumentación avanzada: evaluar evidencia y refutar con respeto",
+          "Investigación filosófica: preguntas, fuentes y escrito argumentativo"
+        ],
+        "11°": [
+          "Problemas actuales: tecnología, IA, bioética y sostenibilidad (análisis)",
+          "Epistemología: ciencia, verdad, método y límites del conocimiento",
+          "Filosofía del lenguaje y la comunicación: discurso, poder y medios",
+          "Proyecto de vida y sentido: identidad, propósito y responsabilidad",
+          "Ensayo final o proyecto: postura argumentada con fuentes y citas básicas"
+        ]
       }
     };
 
